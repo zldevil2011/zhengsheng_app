@@ -10,6 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import com.newly_dawn.app.zhengsheng.data.BarChart;
+import com.newly_dawn.app.zhengsheng.data.PieChart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private LayoutInflater mInflater;
     private List<String> mTitleList = new ArrayList<>();//页卡标题集合
-    private View index, attention, mine;//页卡视图
+    private View index, data, mine;//页卡视图
     private List<View> mViewList = new ArrayList<>();//页卡视图集合
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
 
         mInflater = getLayoutInflater();
         index = mInflater.inflate(R.layout.activity_index, null);
-        attention = mInflater.inflate(R.layout.activity_welcome, null);
+        data = mInflater.inflate(R.layout.activity_data, null);
         mine = mInflater.inflate(R.layout.activity_mine, null);
 
         //添加页卡视图
         mViewList.add(index);
-        mViewList.add(attention);
+        mViewList.add(data);
         mViewList.add(mine);
 
         //添加页卡标题
@@ -56,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mAdapter);//给ViewPager设置适配器
         mTabLayout.setupWithViewPager(mViewPager);//将TabLayout和ViewPager关联起来。
         mTabLayout.setTabsFromPagerAdapter(mAdapter);//给Tabs设置适配器
+
+        build_data();
     }
     //ViewPager适配器
     class MyPagerAdapter extends PagerAdapter {
@@ -84,5 +90,14 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mTitleList.get(position);//页卡标题
         }
+    }
+//    数据显示
+    public void build_data(){
+        LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
+        LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
+        View picChart = new PieChart().execute(this);
+        View barChart = new BarChart().execute(this);
+        today.addView(picChart);
+        month.addView(barChart);
     }
 }

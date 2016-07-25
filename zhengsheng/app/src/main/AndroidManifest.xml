@@ -17,7 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".user.mine" />
-        <activity android:name=".index"></activity>
+        <activity android:name=".index" />
+        <activity android:name=".data.data">
+
+        </activity>
     </application>
 
 </manifest>
