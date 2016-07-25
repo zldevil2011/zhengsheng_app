@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 
 import com.newly_dawn.app.zhengsheng.data.BarChart;
 import com.newly_dawn.app.zhengsheng.data.PieChart;
+import com.newly_dawn.app.zhengsheng.data.TodayData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     public void build_data(){
         LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
         LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
-        View picChart = new PieChart().execute(this);
+        View picChart = new TodayData().execute(this);
         View barChart = new BarChart().execute(this);
         today.addView(picChart);
         month.addView(barChart);

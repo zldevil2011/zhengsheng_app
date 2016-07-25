@@ -64,7 +64,7 @@ public class BarChart {
 //        renderer.addSeriesRenderer(r);
         renderer.setBarSpacing(1.0);
         renderer.setApplyBackgroundColor(true);
-        renderer.setBackgroundColor(Color.TRANSPARENT);
+        renderer.setBackgroundColor(Color.WHITE);
         renderer.setMarginsColor(Color.WHITE);
         renderer.setZoomEnabled(false, false);
         renderer.setPanEnabled(false, false);
