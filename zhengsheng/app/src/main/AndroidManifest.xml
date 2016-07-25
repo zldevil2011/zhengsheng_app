@@ -18,9 +18,15 @@
         </activity>
         <activity android:name=".user.mine" />
         <activity android:name=".index" />
-        <activity android:name=".data.data">
-
-        </activity>
+        <activity android:name=".data.data" />
+        <activity
+            android:name=".user.Register"
+            android:label="@string/title_activity_register"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".user.Login"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

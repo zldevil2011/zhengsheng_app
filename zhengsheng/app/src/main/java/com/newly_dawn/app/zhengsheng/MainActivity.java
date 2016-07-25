@@ -1,6 +1,7 @@
 package com.newly_dawn.app.zhengsheng;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -10,11 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.newly_dawn.app.zhengsheng.data.BarChart;
 import com.newly_dawn.app.zhengsheng.data.PieChart;
 import com.newly_dawn.app.zhengsheng.data.TodayData;
+import com.newly_dawn.app.zhengsheng.user.Login;
+import com.newly_dawn.app.zhengsheng.user.Register;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setTabsFromPagerAdapter(mAdapter);//给Tabs设置适配器
 
         build_data();
+        build_mine();
     }
     //ViewPager适配器
     class MyPagerAdapter extends PagerAdapter {
@@ -100,5 +105,26 @@ public class MainActivity extends AppCompatActivity {
         View barChart = new BarChart().execute(this);
         today.addView(picChart);
         month.addView(barChart);
+    }
+    public void build_mine(){
+        Button loginBtn = (Button)mine.findViewById(R.id.loginBtn);
+        loginBtn.setOnClickListener(new loginBtnClickListener());
+        Button registerBtn = (Button)mine.findViewById(R.id.registerBtn);
+        registerBtn.setOnClickListener(new registerBtnClickListener());
+    }
+    public class loginBtnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            Intent login_intent = new Intent(MainActivity.this, Login.class);
+            startActivity(login_intent);
+        }
+    }
+    public class registerBtnClickListener implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            Intent register_intent = new Intent(MainActivity.this, Register.class);
+            startActivity(register_intent);
+        }
     }
 }

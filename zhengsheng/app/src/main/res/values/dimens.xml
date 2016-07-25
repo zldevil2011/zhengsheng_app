@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="mine_classification_margin">20dp</dimen>
     <dimen name="mine_item_margin">6dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>
