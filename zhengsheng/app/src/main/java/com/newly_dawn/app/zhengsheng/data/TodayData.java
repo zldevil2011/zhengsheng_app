@@ -29,14 +29,16 @@ public class TodayData {
 
         List x = new ArrayList();
         List y = new ArrayList();
-        final int nr = 120;
+        final int nr = 60;
         Random r = new Random();
         double[] XX = new double[120];
         double[] YY = new double[120];
-        double ymin = 100000, ymax = -1;
+        double ymin = 100000, ymax = -1, xmin = Integer.MAX_VALUE, xmax = -1;
         for(int i = 0; i < nr; ++i){
             XX[i] = i + 1;
             YY[i] = (100 + r.nextInt() % 100);
+            xmin = i < xmin ? i : xmin;
+            xmax = i > xmax ? i + 1 : xmax;
             if(YY[i] <= ymin){
                 ymin = YY[i];
             }
@@ -58,12 +60,12 @@ public class TodayData {
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
 
-        setChartSettings(renderer, "Line Chart Demo", "X", "Y", -1, 121, ymin, ymax , Color.WHITE, Color.WHITE);
+        setChartSettings(renderer, "Line Chart Demo", "X", "Y", xmin, xmax, ymin, ymax , Color.WHITE, Color.WHITE);
 
 //        View chart = ChartFactory.getLineChartView(context, dataset, renderer);
 
         return ChartFactory
-                .getLineChartView(context, dataset, renderer);
+                .getCubeLineChartView(context, dataset, renderer, 0.3F);
     }
     protected XYMultipleSeriesDataset buildDataset(String[] titles, List xValues, List yValues) {
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
@@ -102,7 +104,7 @@ public class TodayData {
         {
             XYSeriesRenderer r = new XYSeriesRenderer();
             r.setColor(colors[i]);
-            r.setPointStyle(styles[i]);
+//            r.setPointStyle(styles[i]);
             r.setFillPoints(fill);
             renderer.addSeriesRenderer(r);
         }
