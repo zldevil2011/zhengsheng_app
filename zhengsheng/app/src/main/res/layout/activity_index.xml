@@ -55,7 +55,7 @@
             android:paddingBottom="10dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:background="#eeeff1">
+            android:background="@xml/border_gray">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:layout_marginLeft="2dp"
-            android:background="#eeeff1">
+            android:background="@xml/border_gray">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
