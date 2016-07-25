@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         mInflater = getLayoutInflater();
         index = mInflater.inflate(R.layout.activity_welcome, null);
         attention = mInflater.inflate(R.layout.activity_welcome, null);
-        mine = mInflater.inflate(R.layout.activity_welcome, null);
+        mine = mInflater.inflate(R.layout.activity_mine, null);
 
         //添加页卡视图
         mViewList.add(index);
