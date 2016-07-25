@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager  = (ViewPager)findViewById(R.id.vp_FindFragment_pager);
 
         mInflater = getLayoutInflater();
-        index = mInflater.inflate(R.layout.activity_welcome, null);
+        index = mInflater.inflate(R.layout.activity_index, null);
         attention = mInflater.inflate(R.layout.activity_welcome, null);
         mine = mInflater.inflate(R.layout.activity_mine, null);
 
