@@ -68,7 +68,10 @@ public class BarChart {
         renderer.setMarginsColor(Color.WHITE);
         renderer.setZoomEnabled(false, false);
         renderer.setPanEnabled(false, false);
-        renderer.setLabelsTextSize(15);
+        renderer.setLabelsTextSize(25);
+        renderer.setAxisTitleTextSize(20);
+        renderer.setXLabels(12);
+        renderer.setAxesColor(Color.BLACK);
         renderer.setLabelsColor(Color.BLACK);
         setChartSettings(renderer);
         return renderer;

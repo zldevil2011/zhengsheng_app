@@ -25,7 +25,7 @@ public class TodayData {
     private Context context;
     public View execute(Context context) {
         this.context = context;
-        String[] titles = new String[] { "First"};
+        String[] titles = new String[] { "电压"};
 
         List x = new ArrayList();
         List y = new ArrayList();
@@ -33,11 +33,10 @@ public class TodayData {
         Random r = new Random();
         double[] XX = new double[120];
         double[] YY = new double[120];
-        double ymin = 100000, ymax = -1, xmin = Integer.MAX_VALUE, xmax = -1;
+        double ymin = 100000, ymax = -1, xmin = -5, xmax = -1;
         for(int i = 0; i < nr; ++i){
             XX[i] = i + 1;
             YY[i] = (100 + r.nextInt() % 100);
-            xmin = i < xmin ? i : xmin;
             xmax = i > xmax ? i + 1 : xmax;
             if(YY[i] <= ymin){
                 ymin = YY[i];
@@ -60,7 +59,7 @@ public class TodayData {
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
 
-        setChartSettings(renderer, "Line Chart Demo", "X", "Y", xmin, xmax, ymin, ymax , Color.WHITE, Color.WHITE);
+        setChartSettings(renderer, "", "时间","数值", xmin, xmax, ymin, ymax , Color.BLACK, Color.BLACK);
 
 //        View chart = ChartFactory.getLineChartView(context, dataset, renderer);
 
@@ -97,7 +96,7 @@ public class TodayData {
         renderer.setMarginsColor(Color.WHITE);
         renderer.setZoomEnabled(false, false);
         renderer.setPanEnabled(false, false);
-        renderer.setLabelsTextSize(15);
+
         renderer.setLabelsColor(Color.BLACK);
         int length = colors.length;
         for (int i = 0; i < length; i++)
@@ -118,6 +117,9 @@ public class TodayData {
         renderer.setYTitle(yTitle);
         renderer.setXAxisMin(xMin);
         renderer.setXAxisMax(xMax);
+        renderer.setXLabels(20);
+        renderer.setLabelsTextSize(25);
+        renderer.setAxisTitleTextSize(20);
         renderer.setYAxisMin(yMin);
         renderer.setYAxisMax(yMax);
         renderer.setAxesColor(axesColor);
