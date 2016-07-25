@@ -1,39 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.newly_dawn.app.zhengsheng.data.data"
-    android:orientation="vertical">
-    <TextView
+    tools:context="com.newly_dawn.app.zhengsheng.data.data">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="今日用电情况(kw/h)"
-        android:textSize="20dp"
-        android:background="#eeeff1"
-        android:gravity="center_horizontal|center_vertical"/>
-    <LinearLayout
-        android:id="@+id/today"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="match_parent"
+        tools:context="com.newly_dawn.app.zhengsheng.data.data"
         android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@xml/border"
+                android:padding="10dp"
+                android:layout_margin="3dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/alarm"
+                    android:layout_marginBottom="3dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:layout_marginBottom="3dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="监测预警"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@xml/border"
+                android:padding="10dp"
+                android:layout_margin="3dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/work_order"
+                    android:layout_marginBottom="3dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:layout_marginBottom="3dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="工单管理"/>
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="今日用电情况(kw/h)"
+            android:textSize="20dp"
+            android:background="#eeeff1"
+            android:gravity="center_horizontal|center_vertical"/>
+        <LinearLayout
+            android:id="@+id/today"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical">
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="本月用电情况(kw/h)"
+            android:textSize="20dp"
+            android:background="#eeeff1"
+            android:gravity="center_horizontal|center_vertical"/>
+        <LinearLayout
+            android:id="@+id/month"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical">
+        </LinearLayout>
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="本月用电情况(kw/h)"
-        android:textSize="20dp"
-        android:background="#eeeff1"
-        android:gravity="center_horizontal|center_vertical"/>
-    <LinearLayout
-        android:id="@+id/month"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:orientation="vertical">
-    </LinearLayout>
-</LinearLayout>
+
+</ScrollView>
+
