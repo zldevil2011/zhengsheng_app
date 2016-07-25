@@ -29,11 +29,27 @@ public class TodayData {
 
         List x = new ArrayList();
         List y = new ArrayList();
-
-        x.add(new double[] { 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24} );
+        final int nr = 120;
+        Random r = new Random();
+        double[] XX = new double[120];
+        double[] YY = new double[120];
+        double ymin = 100000, ymax = -1;
+        for(int i = 0; i < nr; ++i){
+            XX[i] = i + 1;
+            YY[i] = (100 + r.nextInt() % 100);
+            if(YY[i] <= ymin){
+                ymin = YY[i];
+            }
+            if(YY[i] >= ymax){
+                ymax = YY[i];
+            }
+        }
+        x.add(XX);
+        y.add(YY);
+//        x.add(new double[] { 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24} );
 //        x.add(new double[] { 0, 2, 4, 6, 8, 10} );
 
-        y.add(new double[] { 13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25});
+//        y.add(new double[] { 13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25});
 //        y.add(new double[] { 18, 9, 21, 15, 10, 6});
 
         XYMultipleSeriesDataset dataset = buildDataset(titles, x, y);
@@ -42,7 +58,7 @@ public class TodayData {
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
 
-        setChartSettings(renderer, "Line Chart Demo", "X", "Y", -1, 25, 10, 35 , Color.WHITE, Color.WHITE);
+        setChartSettings(renderer, "Line Chart Demo", "X", "Y", -1, 121, ymin, ymax , Color.WHITE, Color.WHITE);
 
 //        View chart = ChartFactory.getLineChartView(context, dataset, renderer);
 
