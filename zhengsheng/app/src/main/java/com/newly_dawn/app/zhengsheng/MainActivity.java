@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import com.newly_dawn.app.zhengsheng.data.BarChart;
 import com.newly_dawn.app.zhengsheng.data.PieChart;
 import com.newly_dawn.app.zhengsheng.data.TodayData;
+import com.newly_dawn.app.zhengsheng.user.Alarm;
 import com.newly_dawn.app.zhengsheng.user.Login;
 import com.newly_dawn.app.zhengsheng.user.Register;
 
@@ -105,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
         View barChart = new BarChart().execute(this);
         today.addView(picChart);
         month.addView(barChart);
+
+        LinearLayout linearLayout = (LinearLayout)data.findViewById(R.id.alarm_list_btn);
+        linearLayout.setOnClickListener(new alarmListBtnClickListener());
+    }
+    public class alarmListBtnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            Intent alarm_intent = new Intent(MainActivity.this, Alarm.class);
+            startActivity(alarm_intent);
+        }
     }
     public void build_mine(){
         Button loginBtn = (Button)mine.findViewById(R.id.loginBtn);
