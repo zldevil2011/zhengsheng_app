@@ -2,8 +2,11 @@ package com.newly_dawn.app.zhengsheng.user;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Alarm extends AppCompatActivity {
-
+    private SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,5 +55,43 @@ public class Alarm extends AppCompatActivity {
         SimpleAdapter adapter = new SimpleAdapter(Alarm.this, listItems, R.layout.alarm_list_item,
                 new String[]{"type", "time", "description"}, new int[]{R.id.type, R.id.time, R.id.description});
         alarm_list.setAdapter(adapter);
+
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeLayout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.ocher);
+        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
+        swipeRefreshLayout.setProgressBackgroundColor(R.color.white);
+        swipeRefreshLayout.setProgressViewEndTarget(true, 200);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        mHandler.sendEmptyMessage(1);
+                    }
+                }).start();
+            }
+        });
     }
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    swipeRefreshLayout.setRefreshing(false);
+//                    listviewadapter = new ListViewAdapter(getApplication(),key);
+//                    ListView_Id.setAdapter(listviewadapter);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 }
