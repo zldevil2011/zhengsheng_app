@@ -26,4 +26,5 @@ dependencies {
     compile 'com.romainpiel.shimmer:library:1.4.0@aar'
     compile 'com.android.support:design:23.1.1'
     compile files('../libs/achartengine-1.1.0.jar')
+    compile 'com.jude:rollviewpager:1.2.9'
 }

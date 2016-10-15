@@ -1,8 +1,17 @@
 package com.newly_dawn.app.zhengsheng.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.newly_dawn.app.zhengsheng.MainActivity;
+import com.newly_dawn.app.zhengsheng.R;
+import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.*;
@@ -13,58 +22,63 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 /**
  * Created by dell on 2016/7/25.
  */
 public class TodayData {
     private Context context;
+    private List todayX, monthX;
+    private List todayY, monthY;
+    public View ret_view;
     public View execute(Context context) {
         this.context = context;
-        String[] titles = new String[] { "电压"};
+
+        SharedPreferences preferences=this.context.getSharedPreferences("user",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=preferences.edit();
+        String user_id="3";
+        editor.putString("user_id", user_id);
+        editor.commit();
+
+        SharedPreferences sharedPreferences = this.context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("user_id", null);
+        Log.i("zhengsheng_exp_share", token);
+        String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
+        Map<String, String> dataMp = new HashMap<>();
+        dataMp.put("url", targetUrl);
+        dataMp.put("user_id", token);
+//        new getElectricityAsyncTask().execute(dataMp);
 
         List x = new ArrayList();
         List y = new ArrayList();
-        final int nr = 60;
-        Random r = new Random();
-        double[] XX = new double[120];
-        double[] YY = new double[120];
-        double ymin = 100000, ymax = -1, xmin = -5, xmax = -1;
-        for(int i = 0; i < nr; ++i){
-            XX[i] = i + 1;
-            YY[i] = (100 + r.nextInt() % 100);
-            xmax = i > xmax ? i + 1 : xmax;
-            if(YY[i] <= ymin){
-                ymin = YY[i];
-            }
-            if(YY[i] >= ymax){
-                ymax = YY[i];
-            }
-        }
-        x.add(XX);
-        y.add(YY);
-//        x.add(new double[] { 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24} );
-//        x.add(new double[] { 0, 2, 4, 6, 8, 10} );
+        x.add(new double[] { 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24} );
+        x.add(new double[] { 0, 2, 4, 6, 8, 10} );
 
-//        y.add(new double[] { 13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25});
-//        y.add(new double[] { 18, 9, 21, 15, 10, 6});
+        y.add(new double[] { 13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25,13, 14, 15, 30, 20, 25});
+        y.add(new double[] { 18, 9, 21, 15, 10, 6});
 
+        String[] titles = new String[] { "电压"};
         XYMultipleSeriesDataset dataset = buildDataset(titles, x, y);
 
         int[] colors = new int[] { Color.BLUE};
         PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
-
+        int xmin = 0;
+        int xmax = 24;
+        int ymin = 0;
+        int ymax = 50;
         setChartSettings(renderer, "", "时间","数值", xmin, xmax, ymin, ymax , Color.BLACK, Color.BLACK);
-
-//        View chart = ChartFactory.getLineChartView(context, dataset, renderer);
-
-        return ChartFactory
-                .getCubeLineChartView(context, dataset, renderer, 0.3F);
+        return  ChartFactory.getCubeLineChartView(context, dataset, renderer, 0.3F);
     }
     protected XYMultipleSeriesDataset buildDataset(String[] titles, List xValues, List yValues) {
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
@@ -127,4 +141,82 @@ public class TodayData {
         renderer.setBackgroundColor(Color.WHITE);
         renderer.setLabelsColor(labelsColor);
     }
+//    连接网络获取JSON数据
+    public class getElectricityAsyncTask extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
+        Map<String, String> result = new HashMap<>();
+        @Override
+        protected void onPreExecute() {}
+        @Override
+        protected Map<String, String> doInBackground(Map<String, String>... params) {
+            String url = params[0].get("url");
+            HttpRequest httpRequest = new HttpRequest(url);
+            try {
+                Map<String, String> dataMp = new HashMap<>();
+                dataMp.put("user_id", params[0].get("user_id"));
+                httpRequest.post_connect(dataMp);
+                String responseCode = httpRequest.getResponseCode();
+                String responseText = httpRequest.getResponseText();
+                result.put("code", responseCode);
+                result.put("text", responseText);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i("zhengsheng_exp", String.valueOf(e));
+                result = null;
+            }
+            return result;
+        }
+
+        protected void onPostExecute(Map<String, String> result) {
+            if (result == null) {
+                Toast.makeText(context, "获取用户信息失败", Toast.LENGTH_SHORT).show();
+            } else {
+                if (result.get("code").equals("200")) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result.get("text"));
+                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
+                        JSONObject today_data = new JSONObject(jsonObject.getString("today_data"));
+                        JSONArray today_hour = new JSONArray(today_data.getString("today_hour"));
+
+                        JSONObject month_data = new JSONObject(jsonObject.getString("month_data"));
+                        JSONArray month_day = new JSONArray(month_data.getString("year_month"));
+                        Log.i("zhengsheng_exp_today", String.valueOf(today_hour));
+                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
+                        int len = month_day.length();
+                        double[] month_day_arr = new double[31];
+                        for(int i = 0; i < len; ++i){
+                            Log.i("zhengsheng_exp_day", month_day.getString(i));
+                            month_day_arr[i] = month_day.getDouble(i);
+                        }
+                        Log.i("zhengsheng_exp_day_arr", String.valueOf(month_day_arr));
+                        todayX = new ArrayList();
+                        todayY = new ArrayList();
+                        todayX.add(month_day_arr);
+                        todayY.add(month_day_arr);
+
+                        String[] titles = new String[] { "电压"};
+                        XYMultipleSeriesDataset dataset = buildDataset(titles, todayX, todayY);
+
+                        int[] colors = new int[] { Color.BLUE};
+                        PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
+                        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
+                        int xmin = 0;
+                        int xmax = 30;
+                        int ymin = 0;
+                        int ymax = 50;
+                        setChartSettings(renderer, "", "时间","数值", xmin, xmax, ymin, ymax , Color.BLACK, Color.BLACK);
+                        ret_view =  ChartFactory.getCubeLineChartView(context, dataset, renderer, 0.3F);
+
+                    } catch (JSONException e) {
+                        Log.i("zhengsheng_exp2", String.valueOf(e));
+                        e.printStackTrace();
+                    }
+                    Log.i("zhengsheng_exp3", result.get("text"));
+                } else {
+                    Log.i("zhengsheng_exp4", result.get("code"));
+                }
+            }
+        }
+    }
+
+//    Next Function
 }
