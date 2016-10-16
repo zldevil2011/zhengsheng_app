@@ -46,6 +46,9 @@ public class login extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent();
+                login.this.setResult(1, intent);
+                //关闭Activity
                 login.this.finish();
             }
         });

@@ -1,5 +1,7 @@
 package com.newly_dawn.app.zhengsheng.user;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;

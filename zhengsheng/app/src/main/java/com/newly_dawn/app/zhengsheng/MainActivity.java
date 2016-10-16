@@ -1,6 +1,8 @@
 package com.newly_dawn.app.zhengsheng;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
@@ -180,8 +182,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            Intent alarm_intent = new Intent(MainActivity.this, Alarm.class);
-            startActivity(alarm_intent);
+            SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+            String user_id = sharedPreferences.getString("user_id", null);
+            if(user_id == null){
+                Intent login_intent = new Intent(MainActivity.this, login.class);
+                startActivityForResult(login_intent, 1);
+            }else{
+                Intent alarm_intent = new Intent(MainActivity.this, Alarm.class);
+                startActivity(alarm_intent);
+            }
+
         }
     }
     public void build_mine(){
@@ -204,6 +214,19 @@ public class MainActivity extends AppCompatActivity {
                 today.removeAllViews();
                 LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
                 month.removeAllViews();
+                TextView workOrderLenTex = (TextView)data.findViewById(R.id.workOrderLen);
+                workOrderLenTex.setText("0");
+                TextView tempAlertLenTex = (TextView)data.findViewById(R.id.tempAlertLen);
+                tempAlertLenTex.setText("0");
+                try {
+                    SharedPreferences preferences=getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor=preferences.edit();
+                    editor.putString("user_id", null);
+                    editor.commit();
+                }catch (Exception e){
+                    Log.i("zhengsheng_exp_null", String.valueOf(e));
+                }
+
             }
         });
     }
@@ -227,31 +250,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode){
             case 1:
-                String username = data.getExtras().getString("username");//得到新Activity 关闭后返回的数据
-                String id = data.getExtras().getString("id");//得到新Activity 关闭后返回的数据
-                String email = data.getExtras().getString("email");//得到新Activity 关闭后返回的数据
-                String device_id = data.getExtras().getString("device_id");//得到新Activity 关闭后返回的数据
-                TextView usernameTeV = (TextView)mine.findViewById(R.id.personal_username);
-                TextView deviceIdTeV = (TextView)mine.findViewById(R.id.personal_device_id);
-                usernameTeV.setText(username);
-                deviceIdTeV.setText("ID:" + device_id);
-                LinearLayout personal_info_linearlayout = (LinearLayout)mine.findViewById(R.id.personal_info_linearlayout);
-                personal_info_linearlayout.setVisibility(View.VISIBLE);
+                try {
 
-                LinearLayout logoutLine = (LinearLayout)mine.findViewById(R.id.logoutLine);
-                logoutLine.setVisibility(View.VISIBLE);
+                    String username = data.getExtras().getString("username");//得到新Activity 关闭后返回的数据
+                    String id = data.getExtras().getString("id");//得到新Activity 关闭后返回的数据
+                    String email = data.getExtras().getString("email");//得到新Activity 关闭后返回的数据
+                    String device_id = data.getExtras().getString("device_id");//得到新Activity 关闭后返回的数据
+                    TextView usernameTeV = (TextView) mine.findViewById(R.id.personal_username);
+                    TextView deviceIdTeV = (TextView) mine.findViewById(R.id.personal_device_id);
+                    usernameTeV.setText(username);
+                    deviceIdTeV.setText("ID:" + device_id);
+                    LinearLayout personal_info_linearlayout = (LinearLayout) mine.findViewById(R.id.personal_info_linearlayout);
+                    personal_info_linearlayout.setVisibility(View.VISIBLE);
 
-                String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
-                Map<String, String> dataMp = new HashMap<>();
-                dataMp.put("url", targetUrl);
-                dataMp.put("user_id", id);
-                new paintingToday().execute(dataMp);
+                    LinearLayout logoutLine = (LinearLayout) mine.findViewById(R.id.logoutLine);
+                    logoutLine.setVisibility(View.VISIBLE);
 
-                String targetUrl_month = "http://192.168.1.60:8000/api/v1/user_info/";
-                Map<String, String> dataMqp = new HashMap<>();
-                dataMqp.put("url", targetUrl);
-                dataMqp.put("user_id", id);
-                new paintingMonth().execute(dataMqp);
+                    String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
+                    Map<String, String> dataMp = new HashMap<>();
+                    dataMp.put("url", targetUrl);
+                    dataMp.put("user_id", id);
+                    new paintingToday().execute(dataMp);
+
+                    String targetUrl_month = "http://192.168.1.60:8000/api/v1/user_info/";
+                    Map<String, String> dataMqp = new HashMap<>();
+                    dataMqp.put("url", targetUrl);
+                    dataMqp.put("user_id", id);
+                    new paintingMonth().execute(dataMqp);
+                }
+                catch (Exception e){
+                    Log.i("zhengsheng_exp_noret", String.valueOf(e));
+                }
             case 2:
                 //来自按钮2的请求，作相应业务处理
         }
@@ -288,15 +317,18 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
                         Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
+//                        显示工单数量
+                        String workOrderLen = jsonObject.getString("workorder_len");
+                        TextView workOrderLenTex = (TextView)data.findViewById(R.id.workOrderLen);
+                        workOrderLenTex.setText(workOrderLen);
+//                        显示温度报警数量
+                        String tempAlertLen = jsonObject.getString("tempalert_len");
+                        TextView tempAlertLenTex = (TextView)data.findViewById(R.id.tempAlertLen);
+                        tempAlertLenTex.setText(tempAlertLen);
                         JSONObject today_data = new JSONObject(jsonObject.getString("today_data"));
                         JSONArray today_hour = new JSONArray(today_data.getString("today_hour"));
                         JSONArray today_power = new JSONArray(today_data.getString("today_power"));
 
-                        JSONObject month_data = new JSONObject(jsonObject.getString("month_data"));
-                        JSONArray month_day = new JSONArray(month_data.getString("month_day"));
-                        JSONArray month_power = new JSONArray(month_data.getString("month_power"));
-//                        Log.i("zhengsheng_exp_today", String.valueOf(today_hour));
-//                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
 
                         int xmin = 0;
                         int xmax = 30;
@@ -307,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
                         double[] month_day_arr = new double[31];
                         double[] month_power_arr = new double[31];
                         for(int i = 0; i < len; ++i){
-//                            Log.i("zhengsheng_exp_day", month_day.getString(i));
                             month_day_arr[i] = today_hour.getDouble(i);
                             xmax = i + 1;
                             month_power_arr[i] = today_power.getDouble(i);
@@ -315,7 +346,6 @@ public class MainActivity extends AppCompatActivity {
                                 ymax = today_power.getInt(i) + 2;
                             }
                         }
-//                        Log.i("zhengsheng_exp_day_arr", String.valueOf(month_day_arr));
                         List todayX = new ArrayList();
                         List todayY = new ArrayList();
                         todayX.add(month_day_arr);
