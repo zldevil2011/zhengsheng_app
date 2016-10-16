@@ -344,19 +344,34 @@ public class MainActivity extends AppCompatActivity {
                         int xmin = 0;
                         int xmax = 30;
                         int ymin = 0;
-                        int ymax = 31;
+                        int ymax = 0;
 
                         int len = today_hour.length();
-                        double[] month_day_arr = new double[31];
-                        double[] month_power_arr = new double[31];
-                        for(int i = 0; i < len; ++i){
-                            month_day_arr[i] = today_hour.getDouble(i);
+                        double[] month_day_arr = new double[24];
+                        double[] month_power_arr = new double[24];
+                        int ret_data_index = 0;
+                        for(int i = 0; i < 24; ++i){
+                            month_day_arr[i] = i;
+                            try{
+                                if(today_hour.getInt(ret_data_index) == i){
+                                    month_power_arr[i] = today_power.getDouble(ret_data_index);
+                                    ret_data_index++;
+                                }else{
+                                    month_power_arr[i] = 0;
+                                }
+                            }catch (Exception e){
+                                month_power_arr[i] = 0;
+                            }
+
+//                            month_day_arr[i] = today_hour.getDouble(i);
                             xmax = i + 1;
-                            month_power_arr[i] = today_power.getDouble(i);
+
                             if(ymax < month_power_arr[i]){
-                                ymax = today_power.getInt(i) + 2;
+                                ymax = today_power.getInt(ret_data_index - 1) + 2;
                             }
                         }
+                        Log.i("zhengsheng_arr",String.valueOf(month_day_arr));
+                        Log.i("zhengsheng_arr",String.valueOf(month_power_arr));
                         List todayX = new ArrayList();
                         List todayY = new ArrayList();
                         todayX.add(month_day_arr);
@@ -395,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
             double[] xV = (double[]) xValues.get(i);                 //获取第i条线的数据
             double[] yV = (double[]) yValues.get(i);
             int seriesLength = xV.length;                 //有几个点
-
+            Log.i("zhaolong_len", String.valueOf(seriesLength));
             for (int k = 0; k < seriesLength; k++)        //每条线里有几个点
             {
                 series.add(xV[k], yV[k]);
