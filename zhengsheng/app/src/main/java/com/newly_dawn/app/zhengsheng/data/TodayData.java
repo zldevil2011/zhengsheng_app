@@ -53,7 +53,8 @@ public class TodayData {
         SharedPreferences sharedPreferences = this.context.getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("user_id", null);
         Log.i("zhengsheng_exp_share", token);
-        String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
+        String IP = context.getString(R.string.IP);
+        String targetUrl = IP + "/api/v1/user_info/";
         Map<String, String> dataMp = new HashMap<>();
         dataMp.put("url", targetUrl);
         dataMp.put("user_id", token);
@@ -140,82 +141,6 @@ public class TodayData {
         renderer.setApplyBackgroundColor(true);
         renderer.setBackgroundColor(Color.WHITE);
         renderer.setLabelsColor(labelsColor);
-    }
-//    连接网络获取JSON数据
-    public class getElectricityAsyncTask extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
-        Map<String, String> result = new HashMap<>();
-        @Override
-        protected void onPreExecute() {}
-        @Override
-        protected Map<String, String> doInBackground(Map<String, String>... params) {
-            String url = params[0].get("url");
-            HttpRequest httpRequest = new HttpRequest(url);
-            try {
-                Map<String, String> dataMp = new HashMap<>();
-                dataMp.put("user_id", params[0].get("user_id"));
-                httpRequest.post_connect(dataMp);
-                String responseCode = httpRequest.getResponseCode();
-                String responseText = httpRequest.getResponseText();
-                result.put("code", responseCode);
-                result.put("text", responseText);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.i("zhengsheng_exp", String.valueOf(e));
-                result = null;
-            }
-            return result;
-        }
-
-        protected void onPostExecute(Map<String, String> result) {
-            if (result == null) {
-                Toast.makeText(context, "获取用户信息失败", Toast.LENGTH_SHORT).show();
-            } else {
-                if (result.get("code").equals("200")) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(result.get("text"));
-                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
-                        JSONObject today_data = new JSONObject(jsonObject.getString("today_data"));
-                        JSONArray today_hour = new JSONArray(today_data.getString("today_hour"));
-
-                        JSONObject month_data = new JSONObject(jsonObject.getString("month_data"));
-                        JSONArray month_day = new JSONArray(month_data.getString("year_month"));
-                        Log.i("zhengsheng_exp_today", String.valueOf(today_hour));
-                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
-                        int len = month_day.length();
-                        double[] month_day_arr = new double[31];
-                        for(int i = 0; i < len; ++i){
-                            Log.i("zhengsheng_exp_day", month_day.getString(i));
-                            month_day_arr[i] = month_day.getDouble(i);
-                        }
-                        Log.i("zhengsheng_exp_day_arr", String.valueOf(month_day_arr));
-                        todayX = new ArrayList();
-                        todayY = new ArrayList();
-                        todayX.add(month_day_arr);
-                        todayY.add(month_day_arr);
-
-                        String[] titles = new String[] { "电压"};
-                        XYMultipleSeriesDataset dataset = buildDataset(titles, todayX, todayY);
-
-                        int[] colors = new int[] { Color.BLUE};
-                        PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
-                        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
-                        int xmin = 0;
-                        int xmax = 30;
-                        int ymin = 0;
-                        int ymax = 50;
-                        setChartSettings(renderer, "", "时间","数值", xmin, xmax, ymin, ymax , Color.BLACK, Color.BLACK);
-                        ret_view =  ChartFactory.getCubeLineChartView(context, dataset, renderer, 0.3F);
-
-                    } catch (JSONException e) {
-                        Log.i("zhengsheng_exp2", String.valueOf(e));
-                        e.printStackTrace();
-                    }
-                    Log.i("zhengsheng_exp3", result.get("text"));
-                } else {
-                    Log.i("zhengsheng_exp4", result.get("code"));
-                }
-            }
-        }
     }
 
 //    Next Function

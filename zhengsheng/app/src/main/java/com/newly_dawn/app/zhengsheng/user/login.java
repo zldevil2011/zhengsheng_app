@@ -60,7 +60,8 @@ public class login extends AppCompatActivity {
                 String username = usernameEDT.getText().toString();
                 EditText passwordEDT = (EditText)findViewById(R.id.password);
                 String password = passwordEDT.getText().toString();
-                String targetUrl = "http://192.168.1.60:8000/api/v1/user/login/";
+                String IP = getString(R.string.IP);
+                String targetUrl = IP+"/api/v1/user/login/";
                 Map<String, String> dataMp = new HashMap<>();
                 dataMp.put("url", targetUrl);
                 dataMp.put("username", username);

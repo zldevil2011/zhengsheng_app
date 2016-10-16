@@ -265,14 +265,14 @@ public class MainActivity extends AppCompatActivity {
 
                     LinearLayout logoutLine = (LinearLayout) mine.findViewById(R.id.logoutLine);
                     logoutLine.setVisibility(View.VISIBLE);
-
-                    String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
+                    String IP = getString(R.string.IP);
+                    String targetUrl = IP + "/api/v1/user_info/";
                     Map<String, String> dataMp = new HashMap<>();
                     dataMp.put("url", targetUrl);
                     dataMp.put("user_id", id);
                     new paintingToday().execute(dataMp);
 
-                    String targetUrl_month = "http://192.168.1.60:8000/api/v1/user_info/";
+                    String targetUrl_month = IP + "/api/v1/user_info/";
                     Map<String, String> dataMqp = new HashMap<>();
                     dataMqp.put("url", targetUrl);
                     dataMqp.put("user_id", id);
