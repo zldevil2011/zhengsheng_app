@@ -23,12 +23,11 @@ import android.widget.Toast;
 import com.jude.rollviewpager.RollPagerView;
 import com.jude.rollviewpager.adapter.StaticPagerAdapter;
 import com.jude.rollviewpager.hintview.ColorPointHintView;
-import com.newly_dawn.app.zhengsheng.data.BarChart;
-import com.newly_dawn.app.zhengsheng.data.TodayData;
 import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
 import com.newly_dawn.app.zhengsheng.user.Alarm;
 import com.newly_dawn.app.zhengsheng.user.login;
 import com.newly_dawn.app.zhengsheng.user.Register;
+import com.newly_dawn.app.zhengsheng.user.Contactus;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
@@ -46,7 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -231,6 +229,15 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("zhaolong_xp_null", String.valueOf(e));
                 }
 
+            }
+        });
+
+        TextView contactUsTex = (TextView)mine.findViewById(R.id.contactUs);
+        contactUsTex.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
+                startActivity(contactUs_intent);
             }
         });
     }

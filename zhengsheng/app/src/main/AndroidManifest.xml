@@ -37,6 +37,10 @@
             android:name=".user.Alarm"
             android:label="@string/title_activity_alarm"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".user.Contactus"
+            android:label="@string/title_activity_contactus"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
