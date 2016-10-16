@@ -44,13 +44,13 @@ public class TodayData {
     public View execute(Context context) {
         this.context = context;
 
-        SharedPreferences preferences=this.context.getSharedPreferences("user",Context.MODE_PRIVATE);
+        SharedPreferences preferences=this.context.getSharedPreferences("zhengsheng",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=preferences.edit();
         String user_id="3";
         editor.putString("user_id", user_id);
         editor.commit();
 
-        SharedPreferences sharedPreferences = this.context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.context.getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("user_id", null);
         Log.i("zhengsheng_exp_share", token);
         String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";

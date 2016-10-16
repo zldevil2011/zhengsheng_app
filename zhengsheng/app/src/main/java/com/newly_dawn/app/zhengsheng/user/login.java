@@ -1,5 +1,8 @@
 package com.newly_dawn.app.zhengsheng.user;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -93,8 +96,30 @@ public class login extends AppCompatActivity {
                 if (result.get("code").equals("200")) {
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
-                        Log.i("zhengsheng_login_x1", String.valueOf(jsonObject));
+                        JSONObject user = new JSONObject(jsonObject.getString("user"));
+                        String username = user.getString("username");
+                        String id = user.getString("id");
+                        String email = user.getString("email");
+                        JSONObject device = new JSONObject(user.getString("device"));
+                        String device_id = device.getString("device_id");
+                        Log.i("zhengsheng_username", username);
+                        Log.i("zhengsheng_email", email);
+                        Log.i("zhengsheng_device_id", device_id);
                         Toast.makeText(login.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent();
+                        //把返回数据存入Intent
+                        intent.putExtra("username", username);
+                        intent.putExtra("email", email);
+                        intent.putExtra("device_id", device_id);
+                        intent.putExtra("id", id);
+                        SharedPreferences preferences=login.this.getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor=preferences.edit();
+                        editor.putString("user_id", id);
+                        editor.commit();
+                        //设置返回数据
+                        login.this.setResult(1, intent);
+                        //关闭Activity
+                        login.this.finish();
                     } catch (JSONException e) {
                         Log.i("zhengsheng_login_x2", String.valueOf(e));
                         e.printStackTrace();

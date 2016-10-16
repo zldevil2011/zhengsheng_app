@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jude.rollviewpager.RollPagerView;
@@ -166,21 +167,11 @@ public class MainActivity extends AppCompatActivity {
     public void build_data(){
         LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
         LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
-        View picChart = new TodayData().execute(this);
-        View barChart = new BarChart().execute(this);
-        today.addView(picChart);
-        month.addView(barChart);
-        String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
-        Map<String, String> dataMp = new HashMap<>();
-        dataMp.put("url", targetUrl);
-        dataMp.put("user_id", "3");
-        new paintingToday().execute(dataMp);
+//        View picChart = new TodayData().execute(this);
+//        View barChart = new BarChart().execute(this);
+//        today.addView(picChart);
+//        month.addView(barChart);
 
-        String targetUrl_month = "http://192.168.1.60:8000/api/v1/user_info/";
-        Map<String, String> dataMqp = new HashMap<>();
-        dataMqp.put("url", targetUrl);
-        dataMqp.put("user_id", "3");
-        new paintingMonth().execute(dataMqp);
 
         LinearLayout linearLayout = (LinearLayout)data.findViewById(R.id.alarm_list_btn);
         linearLayout.setOnClickListener(new alarmListBtnClickListener());
@@ -198,13 +189,31 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new loginBtnClickListener());
         Button registerBtn = (Button)mine.findViewById(R.id.registerBtn);
         registerBtn.setOnClickListener(new registerBtnClickListener());
+
+        LinearLayout logoutLine = (LinearLayout)mine.findViewById(R.id.logoutLine);
+        logoutLine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayout personal_info_linearlayout = (LinearLayout)mine.findViewById(R.id.personal_info_linearlayout);
+                personal_info_linearlayout.setVisibility(View.GONE);
+
+                LinearLayout logoutLine = (LinearLayout)mine.findViewById(R.id.logoutLine);
+                logoutLine.setVisibility(View.GONE);
+
+                LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
+                today.removeAllViews();
+                LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
+                month.removeAllViews();
+            }
+        });
     }
     public class loginBtnClickListener implements View.OnClickListener{
 
         @Override
         public void onClick(View v) {
             Intent login_intent = new Intent(MainActivity.this, login.class);
-            startActivity(login_intent);
+            startActivityForResult(login_intent, 1);
+//            startActivity(login_intent);
         }
     }
     public class registerBtnClickListener implements View.OnClickListener{
@@ -212,6 +221,39 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent register_intent = new Intent(MainActivity.this, Register.class);
             startActivity(register_intent);
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode){
+            case 1:
+                String username = data.getExtras().getString("username");//得到新Activity 关闭后返回的数据
+                String id = data.getExtras().getString("id");//得到新Activity 关闭后返回的数据
+                String email = data.getExtras().getString("email");//得到新Activity 关闭后返回的数据
+                String device_id = data.getExtras().getString("device_id");//得到新Activity 关闭后返回的数据
+                TextView usernameTeV = (TextView)mine.findViewById(R.id.personal_username);
+                TextView deviceIdTeV = (TextView)mine.findViewById(R.id.personal_device_id);
+                usernameTeV.setText(username);
+                deviceIdTeV.setText("ID:" + device_id);
+                LinearLayout personal_info_linearlayout = (LinearLayout)mine.findViewById(R.id.personal_info_linearlayout);
+                personal_info_linearlayout.setVisibility(View.VISIBLE);
+
+                LinearLayout logoutLine = (LinearLayout)mine.findViewById(R.id.logoutLine);
+                logoutLine.setVisibility(View.VISIBLE);
+
+                String targetUrl = "http://192.168.1.60:8000/api/v1/user_info/";
+                Map<String, String> dataMp = new HashMap<>();
+                dataMp.put("url", targetUrl);
+                dataMp.put("user_id", id);
+                new paintingToday().execute(dataMp);
+
+                String targetUrl_month = "http://192.168.1.60:8000/api/v1/user_info/";
+                Map<String, String> dataMqp = new HashMap<>();
+                dataMqp.put("url", targetUrl);
+                dataMqp.put("user_id", id);
+                new paintingMonth().execute(dataMqp);
+            case 2:
+                //来自按钮2的请求，作相应业务处理
         }
     }
     public class paintingToday extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
@@ -253,8 +295,8 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject month_data = new JSONObject(jsonObject.getString("month_data"));
                         JSONArray month_day = new JSONArray(month_data.getString("month_day"));
                         JSONArray month_power = new JSONArray(month_data.getString("month_power"));
-                        Log.i("zhengsheng_exp_today", String.valueOf(today_hour));
-                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
+//                        Log.i("zhengsheng_exp_today", String.valueOf(today_hour));
+//                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
 
                         int xmin = 0;
                         int xmax = 30;
@@ -265,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                         double[] month_day_arr = new double[31];
                         double[] month_power_arr = new double[31];
                         for(int i = 0; i < len; ++i){
-                            Log.i("zhengsheng_exp_day", month_day.getString(i));
+//                            Log.i("zhengsheng_exp_day", month_day.getString(i));
                             month_day_arr[i] = today_hour.getDouble(i);
                             xmax = i + 1;
                             month_power_arr[i] = today_power.getDouble(i);
@@ -273,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                                 ymax = today_power.getInt(i) + 2;
                             }
                         }
-                        Log.i("zhengsheng_exp_day_arr", String.valueOf(month_day_arr));
+//                        Log.i("zhengsheng_exp_day_arr", String.valueOf(month_day_arr));
                         List todayX = new ArrayList();
                         List todayY = new ArrayList();
                         todayX.add(month_day_arr);
@@ -414,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                         double[] month_day_arr = new double[31];
                         double[] month_power_arr = new double[31];
                         for(int i = 0; i < len; ++i){
-                            Log.i("zhengsheng_exp_day", month_day.getString(i));
+//                            Log.i("zhengsheng_exp_day", month_day.getString(i));
                             month_day_arr[i] = month_day.getDouble(i);
                             xmax = i + 1;
 
