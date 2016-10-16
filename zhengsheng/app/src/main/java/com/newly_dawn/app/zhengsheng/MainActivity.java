@@ -182,16 +182,20 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
-            String user_id = sharedPreferences.getString("user_id", null);
-            if(user_id == null){
-                Intent login_intent = new Intent(MainActivity.this, login.class);
-                startActivityForResult(login_intent, 1);
-            }else{
-                Intent alarm_intent = new Intent(MainActivity.this, Alarm.class);
-                startActivity(alarm_intent);
+            try {
+                SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+                String user_id = sharedPreferences.getString("user_id", null);
+//                Log.i("user_id", user_id);
+                if(user_id == null){
+                    Intent login_intent = new Intent(MainActivity.this, login.class);
+                    startActivityForResult(login_intent, 1);
+                }else{
+                    Intent alarm_intent = new Intent(MainActivity.this, Alarm.class);
+                    startActivity(alarm_intent);
+                }
+            }catch (Exception e){
+                Log.i("zhaolong_xp", String.valueOf(e));
             }
-
         }
     }
     public void build_mine(){
@@ -224,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.putString("user_id", null);
                     editor.commit();
                 }catch (Exception e){
-                    Log.i("zhengsheng_exp_null", String.valueOf(e));
+                    Log.i("zhaolong_xp_null", String.valueOf(e));
                 }
 
             }
