@@ -95,7 +95,7 @@ public class login extends AppCompatActivity {
         }
         protected void onPostExecute(Map<String, String> result) {
             if (result == null) {
-                Toast.makeText(login.this, "获取用户信息失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(login.this, "登录失败", Toast.LENGTH_SHORT).show();
             } else {
                 if (result.get("code").equals("200")) {
                     try {
