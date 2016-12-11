@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -35,8 +37,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class personalInfo extends AppCompatActivity {
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
+public class personalInfo extends AppCompatActivity {
+    private SweetAlertDialog pDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +97,52 @@ public class personalInfo extends AppCompatActivity {
                 }
             }
         });
+        Button save = (Button)findViewById(R.id.information_save_btn);
+        save.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SweetAlertDialog(personalInfo.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("确认保存吗？")
+                        .setCancelText("取消")
+                        .setConfirmText("保存")
+                        .showCancelButton(true)
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.cancel();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener(){
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.dismiss();
+                                String IP = getString(R.string.IP);
+                                TextView user_id = (TextView)findViewById(R.id.information_user_id);
+                                EditText nickname = (EditText)findViewById(R.id.information_nickname);
+                                EditText telephone = (EditText)findViewById(R.id.information_telephone);
+                                EditText email = (EditText)findViewById(R.id.information_email);
+                                EditText location = (EditText)findViewById(R.id.information_location);
+                                String user_id_val = user_id.getText().toString();
+                                String nickname_val = nickname.getText().toString();
+                                String telephone_val = telephone.getText().toString();
+                                String email_val = email.getText().toString();
+                                String location_val = location.getText().toString();
+                                String targetUrl = IP + "/api/v1/user_info/";
+                                Map<String, String> dataMqp = new HashMap<>();
+                                dataMqp.put("url", targetUrl);
+                                dataMqp.put("user_id", user_id_val);
+                                dataMqp.put("username", nickname_val);
+                                dataMqp.put("telephone", telephone_val);
+                                dataMqp.put("email", email_val);
+                                dataMqp.put("address", location_val);
+                                new updatePersonalInfo().execute(dataMqp);
+                            }
+                        })
+                        .show();
+            }
+        });
     }
+
     private class DateListener implements DatePickerDialog.OnDateSetListener {
         @Override
         public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
@@ -106,6 +155,7 @@ public class personalInfo extends AppCompatActivity {
             information_birthday.setText(date);
         }
     }
+
     public class getPersonalInfo  extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
         Map<String, String> result = new HashMap<>();
         @Override
@@ -141,11 +191,15 @@ public class personalInfo extends AppCompatActivity {
                         JSONObject user_info = new JSONObject(jsonObject.getString("user"));
 
                         Log.i("zhengsheng_exp_user", String.valueOf(user_info));
-                        EditText username = (EditText)findViewById(R.id.information_nickname);
+                        TextView username = (TextView)findViewById(R.id.information_username);
+                        TextView user_id = (TextView)findViewById(R.id.information_user_id);
+                        EditText nickname = (EditText)findViewById(R.id.information_nickname);
                         EditText telephone = (EditText)findViewById(R.id.information_telephone);
                         EditText email = (EditText)findViewById(R.id.information_email);
                         EditText location = (EditText)findViewById(R.id.information_location);
-                        username.setText(user_info.getString("username"));
+                        username.setText(user_info.getString("user_username"));
+                        user_id.setText(user_info.getString("id"));
+                        nickname.setText(user_info.getString("username"));
                         telephone.setText(user_info.getString("telephone"));
                         email.setText(user_info.getString("email"));
                         location.setText(user_info.getString("address"));
@@ -159,7 +213,66 @@ public class personalInfo extends AppCompatActivity {
                 }
             }
         }
-
-
     }
+
+    public class updatePersonalInfo  extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
+        Map<String, String> result = new HashMap<>();
+        @Override
+        protected void onPreExecute() {
+            pDialog = new SweetAlertDialog(personalInfo.this, SweetAlertDialog.PROGRESS_TYPE);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Loading");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+        @Override
+        protected Map<String, String> doInBackground(Map<String, String>... params) {
+            String url = params[0].get("url");
+            HttpRequest httpRequest = new HttpRequest(url);
+            try {
+                Map<String, String> dataMp = new HashMap<>();
+                dataMp.put("user_id", params[0].get("user_id"));
+                dataMp.put("telephone", params[0].get("telephone"));
+                dataMp.put("username", params[0].get("username"));
+                dataMp.put("email", params[0].get("email"));
+                dataMp.put("address", params[0].get("address"));
+                httpRequest.post_connect(dataMp);
+                String responseCode = httpRequest.getResponseCode();
+                String responseText = httpRequest.getResponseText();
+                result.put("code", responseCode);
+                result.put("text", responseText);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i("zhengsheng_exp", String.valueOf(e));
+                result = null;
+            }
+            return result;
+        }
+
+        protected void onPostExecute(Map<String, String> result) {
+            pDialog.dismiss();
+            if (result == null) {
+                Toast.makeText(personalInfo.this, "保存失败", Toast.LENGTH_SHORT).show();
+            } else {
+                if (result.get("code").equals("200")) {
+                    new SweetAlertDialog(personalInfo.this, SweetAlertDialog.SUCCESS_TYPE)
+                            .setTitleText("保存成功!")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.dismiss();
+                                    Intent intent = new Intent();
+                                    personalInfo.this.setResult(1, intent);
+                                    //关闭Activity
+                                    personalInfo.this.finish();
+                                }
+                            })
+                            .show();
+                } else {
+                    Log.i("zhengsheng_exp4", result.get("code"));
+                }
+            }
+        }
+    }
+
 }

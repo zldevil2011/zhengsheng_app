@@ -39,8 +39,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:visibility="invisible"
-                android:text="usrname"/>
+                android:visibility="visible"
+                android:text="username"/>
+            <TextView
+                android:id="@+id/information_user_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="invisible"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -184,7 +190,7 @@
         android:orientation="vertical"
         android:layout_marginTop="@dimen/mine_classification_margin">
         <Button
-            android:id="@+id/loginBtn"
+            android:id="@+id/information_save_btn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/round_btn_save"
