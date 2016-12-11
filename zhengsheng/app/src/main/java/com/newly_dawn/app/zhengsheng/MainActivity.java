@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences preferences=getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor=preferences.edit();
                     editor.putString("user_id", null);
-                    editor.commit();
+                    editor.apply();
                 }catch (Exception e){
                     Log.i("zhaolong_xp_null", String.valueOf(e));
                 }
@@ -347,35 +347,39 @@ public class MainActivity extends AppCompatActivity {
                         int ymax = 0;
 
                         int len = today_hour.length();
-                        double[] month_day_arr = new double[24];
-                        double[] month_power_arr = new double[24];
+                        double[] today_hour_arr = new double[len];
+                        double[] today_power_arr = new double[len];
                         int ret_data_index = 0;
-                        for(int i = 0; i < 24; ++i){
-                            month_day_arr[i] = i;
+                        for(int i = 0; i < len; ++i){
+                            today_hour_arr[i] = i;
                             try{
                                 if(today_hour.getInt(ret_data_index) == i){
-                                    month_power_arr[i] = today_power.getDouble(ret_data_index);
+                                    today_power_arr[i] = today_power.getDouble(ret_data_index);
                                     ret_data_index++;
                                 }else{
-                                    month_power_arr[i] = 0;
+                                    today_power_arr[i] = 0;
                                 }
                             }catch (Exception e){
-                                month_power_arr[i] = 0;
+                                today_power_arr[i] = 0;
                             }
 
 //                            month_day_arr[i] = today_hour.getDouble(i);
                             xmax = i + 1;
 
-                            if(ymax < month_power_arr[i]){
+                            if(ymax < today_power_arr[i]){
                                 ymax = today_power.getInt(ret_data_index - 1) + 2;
                             }
                         }
-                        Log.i("zhengsheng_arr",String.valueOf(month_day_arr));
-                        Log.i("zhengsheng_arr",String.valueOf(month_power_arr));
+                        for(int i = 0; i < today_hour_arr.length; ++i){
+                            Log.i("zhengsheng_arr" + i,String.valueOf(today_hour_arr[i]));
+                        }
+                        for(int i = 0; i < today_power_arr.length; ++i){
+                            Log.i("zhengsheng_arr" + i,String.valueOf(today_power_arr[i]));
+                        }
                         List todayX = new ArrayList();
                         List todayY = new ArrayList();
-                        todayX.add(month_day_arr);
-                        todayY.add(month_power_arr);
+                        todayX.add(today_hour_arr);
+                        todayY.add(today_power_arr);
 
                         String[] titles = new String[] { "电能"};
                         XYMultipleSeriesDataset dataset = buildDataset(titles, todayX, todayY);
@@ -431,8 +435,8 @@ public class MainActivity extends AppCompatActivity {
         renderer.setMarginsColor(Color.WHITE);
         renderer.setZoomEnabled(false, false);
         renderer.setPanEnabled(false, false);
-
         renderer.setLabelsColor(Color.BLACK);
+        renderer.setMargins(new int[] { 20, 50, 15, 20 });
         int length = colors.length;
         for (int i = 0; i < length; i++)
         {
@@ -440,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
             r.setColor(colors[i]);
 //            r.setPointStyle(styles[i]);
             r.setFillPoints(fill);
+            r.setDisplayChartValues(true);
             renderer.addSeriesRenderer(r);
         }
         return renderer;
@@ -547,6 +552,7 @@ public class MainActivity extends AppCompatActivity {
                         renderer.setXLabels(nr);
                         renderer.setAxesColor(Color.BLACK);
                         renderer.setLabelsColor(Color.BLACK);
+                        renderer.setMargins(new int[] { 20, 50, 15, 20 });
                         setChartSettingsPie(renderer, xmin, xmax, ymin, ymax);
 
                         View newView = ChartFactory.getBarChartView(MainActivity.this, dataset, renderer, org.achartengine.chart.BarChart.Type.DEFAULT);

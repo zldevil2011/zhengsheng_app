@@ -52,6 +52,10 @@ public class login extends AppCompatActivity {
                 login.this.finish();
             }
         });
+        EditText usernameEDT = (EditText)findViewById(R.id.username);
+        usernameEDT.setText("李四");
+        EditText passwordEDT = (EditText)findViewById(R.id.password);
+        passwordEDT.setText("123456");
         Button loginButton = (Button)findViewById(R.id.loginBtn);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
