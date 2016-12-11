@@ -26,6 +26,7 @@ import com.jude.rollviewpager.adapter.StaticPagerAdapter;
 import com.jude.rollviewpager.hintview.ColorPointHintView;
 import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
 import com.newly_dawn.app.zhengsheng.user.Alarm;
+import com.newly_dawn.app.zhengsheng.user.feedback;
 import com.newly_dawn.app.zhengsheng.user.login;
 import com.newly_dawn.app.zhengsheng.user.Register;
 import com.newly_dawn.app.zhengsheng.user.Contactus;
@@ -299,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         TextView myInformation = (TextView)mine.findViewById(R.id.myInformation);
-        TextView feedback = (TextView)mine.findViewById(R.id.feedback);
+        TextView feedback_btn = (TextView)mine.findViewById(R.id.feedback);
         myInformation.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -318,22 +319,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        feedback.setOnClickListener(new View.OnClickListener() {
+        feedback_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Are you sure?")
-                        .setContentText("Won't be able to recover this file!")
-                        .setCancelText("No,cancel plx!")
-                        .setConfirmText("Yes,delete it!")
-                        .showCancelButton(true)
-                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sDialog) {
-                                sDialog.cancel();
-                            }
-                        })
-                        .show();
+                Intent feedback_intent = new Intent(MainActivity.this, feedback.class);
+                startActivity(feedback_intent);
             }
         });
     }

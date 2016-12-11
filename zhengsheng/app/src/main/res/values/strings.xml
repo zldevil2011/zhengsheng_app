@@ -15,4 +15,5 @@
     <string name="IP">http://www.xiaolong.party:8888</string>
     <string name="title_activity_contactus">contactus</string>
     <string name="title_activity_personal_info">personalInfo</string>
+    <string name="title_activity_feedback">feedback</string>
 </resources>
