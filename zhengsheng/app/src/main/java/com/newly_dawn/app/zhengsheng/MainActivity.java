@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -243,31 +244,49 @@ public class MainActivity extends AppCompatActivity {
         logoutLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LinearLayout personal_info_linearlayout = (LinearLayout)mine.findViewById(R.id.personal_info_linearlayout);
-                personal_info_linearlayout.setVisibility(View.GONE);
+                new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("确认登出吗？")
+                        .setCancelText("取消")
+                        .setConfirmText("确认")
+                        .showCancelButton(true)
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.cancel();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener(){
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.dismiss();
 
-                LinearLayout logoutLine = (LinearLayout)mine.findViewById(R.id.logoutLine);
-                logoutLine.setVisibility(View.GONE);
+                                LinearLayout personal_info_linearlayout = (LinearLayout)mine.findViewById(R.id.personal_info_linearlayout);
+                                personal_info_linearlayout.setVisibility(View.GONE);
 
-                LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
-                today.removeAllViews();
-                LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
-                month.removeAllViews();
-                TextView workOrderLenTex = (TextView)data.findViewById(R.id.workOrderLen);
-                workOrderLenTex.setText("0");
-                TextView tempAlertLenTex = (TextView)data.findViewById(R.id.tempAlertLen);
-                tempAlertLenTex.setText("0");
-                try {
-                    SharedPreferences preferences=getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor=preferences.edit();
-                    editor.putString("user_id", null);
-                    editor.putString("username", null);
-                    editor.putString("device_id", null);
-                    editor.apply();
-                }catch (Exception e){
-                    Log.i("zhaolong_xp_null", String.valueOf(e));
-                }
+                                LinearLayout logoutLine = (LinearLayout)mine.findViewById(R.id.logoutLine);
+                                logoutLine.setVisibility(View.GONE);
 
+                                LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
+                                today.removeAllViews();
+                                LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
+                                month.removeAllViews();
+                                TextView workOrderLenTex = (TextView)data.findViewById(R.id.workOrderLen);
+                                workOrderLenTex.setText("0");
+                                TextView tempAlertLenTex = (TextView)data.findViewById(R.id.tempAlertLen);
+                                tempAlertLenTex.setText("0");
+                                try {
+                                    SharedPreferences preferences=getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor=preferences.edit();
+                                    editor.putString("user_id", null);
+                                    editor.putString("username", null);
+                                    editor.putString("device_id", null);
+                                    editor.apply();
+                                }catch (Exception e){
+                                    Log.i("zhaolong_xp_null", String.valueOf(e));
+                                }
+                            }
+                        })
+                        .show();
             }
         });
 
