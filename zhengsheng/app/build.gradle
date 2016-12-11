@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile files('../libs/achartengine-1.1.0.jar')
     compile 'com.jude:rollviewpager:1.2.9'
+    compile 'cn.pedant.sweetalert:library:1.3'
 }

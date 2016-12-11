@@ -1,6 +1,8 @@
 package com.newly_dawn.app.zhengsheng;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -8,6 +10,7 @@ import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +48,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -238,6 +243,32 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
                 startActivity(contactUs_intent);
+            }
+        });
+        TextView myInformation = (TextView)mine.findViewById(R.id.myInformation);
+        TextView feedback = (TextView)mine.findViewById(R.id.feedback);
+        myInformation.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Are you sure?")
+                        .setContentText("Won't be able to recover this file!")
+                        .setCancelText("No,cancel plx!")
+                        .setConfirmText("Yes,delete it!")
+                        .showCancelButton(true)
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.cancel();
+                            }
+                        })
+                        .show();
+            }
+        });
+        feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }

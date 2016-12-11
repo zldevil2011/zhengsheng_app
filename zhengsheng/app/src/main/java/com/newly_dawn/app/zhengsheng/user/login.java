@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,8 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class login extends AppCompatActivity {
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
+public class login extends AppCompatActivity {
+    private SweetAlertDialog pDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +73,11 @@ public class login extends AppCompatActivity {
                 dataMp.put("url", targetUrl);
                 dataMp.put("username", username);
                 dataMp.put("password", password);
+                pDialog = new SweetAlertDialog(login.this, SweetAlertDialog.PROGRESS_TYPE);
+                pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                pDialog.setTitleText("Loading");
+                pDialog.setCancelable(false);
+                pDialog.show();
                 new LoginAsync().execute(dataMp);
             }
         });
@@ -82,6 +90,7 @@ public class login extends AppCompatActivity {
             String url = params[0].get("url");
             HttpRequest httpRequest = new HttpRequest(url);
             try {
+                SystemClock.sleep(1000);
                 Map<String, String> dataMp = new HashMap<>();
                 dataMp.put("username", params[0].get("username"));
                 dataMp.put("password", params[0].get("password"));
@@ -98,6 +107,7 @@ public class login extends AppCompatActivity {
             return result;
         }
         protected void onPostExecute(Map<String, String> result) {
+            pDialog.cancel();
             if (result == null) {
                 Toast.makeText(login.this, "登录失败", Toast.LENGTH_SHORT).show();
             } else {
