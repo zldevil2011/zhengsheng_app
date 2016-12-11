@@ -1,8 +1,6 @@
 package com.newly_dawn.app.zhengsheng;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -10,7 +8,6 @@ import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +28,7 @@ import com.newly_dawn.app.zhengsheng.user.Alarm;
 import com.newly_dawn.app.zhengsheng.user.login;
 import com.newly_dawn.app.zhengsheng.user.Register;
 import com.newly_dawn.app.zhengsheng.user.Contactus;
+import com.newly_dawn.app.zhengsheng.user.personalInfo;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
@@ -96,6 +94,40 @@ public class MainActivity extends AppCompatActivity {
         build_index();
         build_data();
         build_mine();
+        reloadData();
+    }
+    public void reloadData(){
+//        当再次打开App并保留有上次的登录信息的话，会读取信息并展示
+        try {
+            SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+            String user_id = sharedPreferences.getString("user_id", null);
+            String username = sharedPreferences.getString("username", null);
+            String device_id = sharedPreferences.getString("device_id", null);
+
+            TextView usernameTeV = (TextView) mine.findViewById(R.id.personal_username);
+            TextView deviceIdTeV = (TextView) mine.findViewById(R.id.personal_device_id);
+            usernameTeV.setText(username);
+            deviceIdTeV.setText("ID:" + device_id);
+            LinearLayout personal_info_linearlayout = (LinearLayout) mine.findViewById(R.id.personal_info_linearlayout);
+            personal_info_linearlayout.setVisibility(View.VISIBLE);
+
+            LinearLayout logoutLine = (LinearLayout) mine.findViewById(R.id.logoutLine);
+            logoutLine.setVisibility(View.VISIBLE);
+            String IP = getString(R.string.IP);
+            String targetUrl = IP + "/api/v1/user_info/";
+            Map<String, String> dataMp = new HashMap<>();
+            dataMp.put("url", targetUrl);
+            dataMp.put("user_id", user_id);
+            new paintingToday().execute(dataMp);
+
+            String targetUrl_month = IP + "/api/v1/user_info/";
+            Map<String, String> dataMqp = new HashMap<>();
+            dataMqp.put("url", targetUrl);
+            dataMqp.put("user_id", user_id);
+            new paintingMonth().execute(dataMqp);
+        }catch (Exception e){
+
+        }
     }
     //ViewPager适配器
     class MyPagerAdapter extends PagerAdapter {
@@ -229,6 +261,8 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences preferences=getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor=preferences.edit();
                     editor.putString("user_id", null);
+                    editor.putString("username", null);
+                    editor.putString("device_id", null);
                     editor.apply();
                 }catch (Exception e){
                     Log.i("zhaolong_xp_null", String.valueOf(e));
@@ -250,6 +284,24 @@ public class MainActivity extends AppCompatActivity {
         myInformation.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                try {
+                    SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+                    String user_id = sharedPreferences.getString("user_id", null);
+                    if(user_id == null){
+                        Intent login_intent = new Intent(MainActivity.this, login.class);
+                        startActivityForResult(login_intent, 1);
+                    }else{
+                        Intent personalInfo_intent = new Intent(MainActivity.this, personalInfo.class);
+                        startActivity(personalInfo_intent);
+                    }
+                }catch (Exception e){
+                    Log.i("zhaolong_xp", String.valueOf(e));
+                }
+            }
+        });
+        feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("Are you sure?")
                         .setContentText("Won't be able to recover this file!")
@@ -263,12 +315,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         })
                         .show();
-            }
-        });
-        feedback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
             }
         });
     }

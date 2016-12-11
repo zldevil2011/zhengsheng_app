@@ -8,10 +8,10 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        tools:replace="android:icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
         <activity android:name=".MainActivity" />
         <activity android:name=".welcome">
             <intent-filter>
@@ -42,6 +42,10 @@
         <activity
             android:name=".user.Contactus"
             android:label="@string/title_activity_contactus"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".user.personalInfo"
+            android:label="@string/title_activity_personal_info"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

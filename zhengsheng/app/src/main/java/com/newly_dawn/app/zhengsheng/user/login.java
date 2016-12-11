@@ -133,6 +133,8 @@ public class login extends AppCompatActivity {
                         SharedPreferences preferences=login.this.getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor=preferences.edit();
                         editor.putString("user_id", id);
+                        editor.putString("username", username);
+                        editor.putString("device_id", device_id);
                         editor.commit();
                         //设置返回数据
                         login.this.setResult(1, intent);
