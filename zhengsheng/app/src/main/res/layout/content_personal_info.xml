@@ -39,6 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:visibility="invisible"
                 android:text="usrname"/>
         </LinearLayout>
     </LinearLayout>
@@ -84,7 +85,7 @@
             android:layout_weight="1"
             android:inputType="number"
             android:ems="10"
-            android:id="@+id/telephone"
+            android:id="@+id/information_telephone"
             />
     </LinearLayout>
     <LinearLayout
@@ -106,7 +107,7 @@
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:ems="10"
-            android:id="@+id/editText"
+            android:id="@+id/information_email"
             android:layout_weight="1" />
 
     </LinearLayout>
