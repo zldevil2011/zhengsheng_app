@@ -349,8 +349,14 @@ public class MainActivity extends AppCompatActivity {
         contactUsTex.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
-                startActivity(contactUs_intent);
+//                Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
+//                startActivity(contactUs_intent);
+                try {
+                    Intent register_intent = new Intent(MainActivity.this, data_list.class);
+                    startActivity(register_intent);
+                }catch (Exception e){
+                    Log.i("zhengsheng_error5", String.valueOf(e));
+                }
             }
         });
         TextView myInformation = (TextView)mine.findViewById(R.id.myInformation);
@@ -393,7 +399,7 @@ public class MainActivity extends AppCompatActivity {
     public class registerBtnClickListener implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-            Intent register_intent = new Intent(MainActivity.this, data_list.class);
+            Intent register_intent = new Intent(MainActivity.this, Register.class);
             startActivity(register_intent);
         }
     }
