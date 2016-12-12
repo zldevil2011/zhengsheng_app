@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
                 if (result.get("code").equals("200")) {
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
-                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
+//                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
 //                        显示工单数量
                         String workOrderLen = jsonObject.getString("workorder_len");
                         TextView workOrderLenTex = (TextView)data.findViewById(R.id.workOrderLen);
@@ -456,12 +456,12 @@ public class MainActivity extends AppCompatActivity {
                                 ymax = today_power.getInt(ret_data_index - 1) + 2;
                             }
                         }
-                        for(int i = 0; i < today_hour_arr.length; ++i){
-                            Log.i("zhengsheng_arr" + i,String.valueOf(today_hour_arr[i]));
-                        }
-                        for(int i = 0; i < today_power_arr.length; ++i){
-                            Log.i("zhengsheng_arr" + i,String.valueOf(today_power_arr[i]));
-                        }
+//                        for(int i = 0; i < today_hour_arr.length; ++i){
+//                            Log.i("zhengsheng_arr" + i,String.valueOf(today_hour_arr[i]));
+//                        }
+//                        for(int i = 0; i < today_power_arr.length; ++i){
+//                            Log.i("zhengsheng_arr" + i,String.valueOf(today_power_arr[i]));
+//                        }
                         List todayX = new ArrayList();
                         List todayY = new ArrayList();
                         todayX.add(today_hour_arr);
@@ -483,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("zhengsheng_exp2", String.valueOf(e));
                         e.printStackTrace();
                     }
-                    Log.i("zhengsheng_exp3", result.get("text"));
+//                    Log.i("zhengsheng_exp3", result.get("text"));
                 } else {
                     Log.i("zhengsheng_exp4", result.get("code"));
                 }
@@ -588,12 +588,12 @@ public class MainActivity extends AppCompatActivity {
                 if (result.get("code").equals("200")) {
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
-                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
+//                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
 
                         JSONObject month_data = new JSONObject(jsonObject.getString("month_data"));
                         JSONArray month_day = new JSONArray(month_data.getString("month_day"));
                         JSONArray month_power = new JSONArray(month_data.getString("month_power"));
-                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
+//                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
 
                         double xmin = 0;
                         double xmax = -1;
@@ -650,7 +650,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("zhengsheng_exp2", String.valueOf(e));
                         e.printStackTrace();
                     }
-                    Log.i("zhengsheng_exp3", result.get("text"));
+//                    Log.i("zhengsheng_exp3", result.get("text"));
                 } else {
                     Log.i("zhengsheng_exp4", result.get("code"));
                 }

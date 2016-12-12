@@ -159,7 +159,13 @@ public class personalInfo extends AppCompatActivity {
     public class getPersonalInfo  extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
         Map<String, String> result = new HashMap<>();
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+            pDialog = new SweetAlertDialog(personalInfo.this, SweetAlertDialog.PROGRESS_TYPE);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Loading");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
         @Override
         protected Map<String, String> doInBackground(Map<String, String>... params) {
             String url = params[0].get("url");
@@ -180,6 +186,7 @@ public class personalInfo extends AppCompatActivity {
         }
 
         protected void onPostExecute(Map<String, String> result) {
+            pDialog.dismiss();
             if (result == null) {
                 Toast.makeText(personalInfo.this, "获取用户信息失败", Toast.LENGTH_SHORT).show();
             } else {
