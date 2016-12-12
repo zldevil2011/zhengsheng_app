@@ -42,9 +42,9 @@ public class feedback extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new SweetAlertDialog(feedback.this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("确认提交吗？")
+                        .setTitleText("确认提交吗")
                         .setCancelText("取消")
-                        .setConfirmText("保存")
+                        .setConfirmText("提交")
                         .showCancelButton(true)
                         .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
