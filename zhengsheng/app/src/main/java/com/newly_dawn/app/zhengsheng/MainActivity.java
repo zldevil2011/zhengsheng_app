@@ -430,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
                         int xmin = 0;
                         int xmax = 30;
                         int ymin = 0;
-                        int ymax = 0;
+                        float ymax = 0;
 
                         int len = today_hour.length();
                         double[] today_hour_arr = new double[len];
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                             xmax = i + 1;
 
                             if(ymax < today_power_arr[i]){
-                                ymax = today_power.getInt(ret_data_index - 1) + 2;
+                                ymax = (float) (today_power.getDouble(ret_data_index - 1));
                             }
                         }
 //                        for(int i = 0; i < today_hour_arr.length; ++i){
@@ -471,11 +471,11 @@ public class MainActivity extends AppCompatActivity {
                         XYMultipleSeriesDataset dataset = buildDataset(titles, todayX, todayY);
 
                         int[] colors = new int[] { Color.BLUE};
-                        PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE};
+                        PointStyle[] styles = new PointStyle[] { PointStyle.TRIANGLE};
                         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
 
                         setChartSettings(renderer, "", "时间","电能(Kwh)", xmin, xmax, ymin, ymax , Color.BLACK, Color.BLACK);
-                        View newView = ChartFactory.getCubeLineChartView(MainActivity.this, dataset, renderer, 0.3F);
+                        View newView = ChartFactory.getLineChartView(MainActivity.this, dataset, renderer);
                         LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
                         today.removeAllViews();
                         today.addView(newView);
@@ -523,12 +523,14 @@ public class MainActivity extends AppCompatActivity {
         renderer.setPanEnabled(false, false);
         renderer.setLabelsColor(Color.BLACK);
         renderer.setMargins(new int[] { 20, 50, 15, 20 });
+        renderer.setZoomButtonsVisible(true);//缩放按钮
         int length = colors.length;
+        renderer.setShowGrid(true);
         for (int i = 0; i < length; i++)
         {
             XYSeriesRenderer r = new XYSeriesRenderer();
             r.setColor(colors[i]);
-//            r.setPointStyle(styles[i]);
+            r.setPointStyle(styles[i]);
             r.setFillPoints(fill);
             r.setDisplayChartValues(true);
             renderer.addSeriesRenderer(r);
