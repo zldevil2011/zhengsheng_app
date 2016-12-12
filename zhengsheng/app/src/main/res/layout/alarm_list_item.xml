@@ -18,6 +18,7 @@
             android:layout_weight="1"
             android:text="类型：温度"
             android:singleLine="true"
+            android:textColor="#000000"
             />
         <TextView
             android:id="@+id/time"
@@ -25,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="时间"
+            android:textColor="#000000"
             android:gravity="right" />
     </LinearLayout>
     <LinearLayout

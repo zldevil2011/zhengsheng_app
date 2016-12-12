@@ -60,7 +60,7 @@ public class Alarm extends AppCompatActivity {
         String user_id = sharedPreferences.getString("user_id", null);
         Log.i("user_id", user_id);
         String IP = getString(R.string.IP);
-        String targetUrl = IP+"/api/v1/user/tempAlertList/?user_id=" + user_id;
+        String targetUrl = IP+"/api/v1/user/eventList/?user_id=" + user_id;
         Map<String, String> dataMp = new HashMap<>();
         dataMp.put("url", targetUrl);
         new GetAlertListAsync().execute(dataMp);
@@ -132,18 +132,19 @@ public class Alarm extends AppCompatActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
                         Log.i("zhaolong", String.valueOf(jsonObject));
-                        JSONArray alertList = jsonObject.getJSONArray("tempAlertList");
+                        JSONArray alertList = jsonObject.getJSONArray("event_list");
                         Log.i("zhaolong", String.valueOf(alertList));
                         ListView alarm_list = (ListView)findViewById(R.id.alarm_list);
                         List<Map<String,String>> listItems = new ArrayList<>();
                         int len = alertList.length();
                         for(int i = 0; i < len; ++i){
                             Map<String, String> map = new HashMap<>();
-                            JSONObject device = alertList.getJSONObject(i).getJSONObject("device_id");
-                            String time = alertList.getJSONObject(i).getString("tempBT");
-                            map.put("type", "温度预警");
+                            JSONObject event = alertList.getJSONObject(i);
+                            String type = event.getString("name");
+                            String time = event.getString("time");
+                            map.put("type", type);
                             map.put("time", time);
-                            map.put("description","您的电表箱在" + time + "温度过高，请注意检修");
+                            map.put("description","请注意，您的电表箱在" + time + "发生了" + type + "事件。");
                             listItems.add(map);
                         }
                         SimpleAdapter adapter = new SimpleAdapter(Alarm.this, listItems, R.layout.alarm_list_item,
