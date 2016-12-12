@@ -26,6 +26,7 @@ import com.jude.rollviewpager.adapter.StaticPagerAdapter;
 import com.jude.rollviewpager.hintview.ColorPointHintView;
 import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
 import com.newly_dawn.app.zhengsheng.user.Alarm;
+import com.newly_dawn.app.zhengsheng.user.WorkOrder;
 import com.newly_dawn.app.zhengsheng.user.feedback;
 import com.newly_dawn.app.zhengsheng.user.login;
 import com.newly_dawn.app.zhengsheng.user.Register;
@@ -214,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = (LinearLayout)data.findViewById(R.id.alarm_list_btn);
         linearLayout.setOnClickListener(new alarmListBtnClickListener());
+        LinearLayout workOrder_list_btn = (LinearLayout)data.findViewById(R.id.workOrder_list_btn);
+        workOrder_list_btn.setOnClickListener(new workOrderListBtnClickListener());
     }
     public class alarmListBtnClickListener implements View.OnClickListener{
 
@@ -232,6 +235,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }catch (Exception e){
                 Log.i("zhaolong_xp", String.valueOf(e));
+            }
+        }
+    }
+    public class workOrderListBtnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            try {
+                SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
+                String user_id = sharedPreferences.getString("user_id", null);
+                if(user_id == null){
+                    Intent login_intent = new Intent(MainActivity.this, login.class);
+                    startActivityForResult(login_intent, 1);
+                }else{
+                    Intent workorder_intent = new Intent(MainActivity.this, WorkOrder.class);
+                    startActivity(workorder_intent);
+                }
+            }catch (Exception e){
             }
         }
     }
