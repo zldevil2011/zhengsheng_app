@@ -49,8 +49,13 @@ public class Alarm extends AppCompatActivity {
             }
         });
         initUI();
+        loadData();
+        loadEvent();
     }
     public void initUI(){
+
+    }
+    public void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", null);
         Log.i("user_id", user_id);
@@ -59,21 +64,8 @@ public class Alarm extends AppCompatActivity {
         Map<String, String> dataMp = new HashMap<>();
         dataMp.put("url", targetUrl);
         new GetAlertListAsync().execute(dataMp);
-//        ListView alarm_list = (ListView)findViewById(R.id.alarm_list);
-//        List<Map<String,String>> listItems = new ArrayList<>();
-//        for(int i = 0; i < 20; ++i){
-//            Map<String, String> map = new HashMap<>();
-//            map.put("type", "温度预警");
-//            map.put("time","2016-07-26 15:17:22");
-//            map.put("description","您的电表箱温度过高，请注意检修");
-//            listItems.add(map);
-//        }
-//        Log.i("zhaolong", String.valueOf(listItems));
-//        Log.i("zhaolong", listItems.size() + "");
-//        SimpleAdapter adapter = new SimpleAdapter(Alarm.this, listItems, R.layout.alarm_list_item,
-//                new String[]{"type", "time", "description"}, new int[]{R.id.type, R.id.time, R.id.description});
-//        alarm_list.setAdapter(adapter);
-
+    }
+    public void loadEvent(){
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeLayout);
         swipeRefreshLayout.setColorSchemeResources(R.color.ocher);
         swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
@@ -87,7 +79,7 @@ public class Alarm extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(3000);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -104,8 +96,7 @@ public class Alarm extends AppCompatActivity {
             switch (msg.what) {
                 case 1:
                     swipeRefreshLayout.setRefreshing(false);
-//                    listviewadapter = new ListViewAdapter(getApplication(),key);
-//                    ListView_Id.setAdapter(listviewadapter);
+                    loadData();
                     break;
                 default:
                     break;

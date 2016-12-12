@@ -5,12 +5,16 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -34,8 +38,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorkOrder extends AppCompatActivity {
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
+public class WorkOrder extends AppCompatActivity {
+    private SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +58,7 @@ public class WorkOrder extends AppCompatActivity {
             }
         });
         loadData();
+        loadEvent();
     }
     public void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("zhengsheng", Context.MODE_PRIVATE);
@@ -63,6 +70,44 @@ public class WorkOrder extends AppCompatActivity {
         dataMp.put("user_id", user_id);
         new getUserWorkOrders().execute(dataMp);
     }
+    public void loadEvent(){
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.work_order_swipeLayout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.ocher);
+        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
+        swipeRefreshLayout.setProgressBackgroundColor(R.color.white);
+        swipeRefreshLayout.setProgressViewEndTarget(true, 200);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        mHandler.sendEmptyMessage(1);
+                    }
+                }).start();
+            }
+        });
+    }
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    swipeRefreshLayout.setRefreshing(false);
+                    loadData();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
     public class getUserWorkOrders extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
         Map<String, String> result = new HashMap<>();
         @Override
@@ -103,6 +148,7 @@ public class WorkOrder extends AppCompatActivity {
                             String time = alertList.getJSONObject(i).getString("time");
                             String content = alertList.getJSONObject(i).getString("content");
                             String status = alertList.getJSONObject(i).getString("status");
+                            content = content.replaceAll("<br>", "\n");
                             map.put("work_order_content", content);
                             map.put("work_order_status", "状态:" + status + ",  ");
                             map.put("work_order_number", "编号:" +num + ",  ");
@@ -113,6 +159,17 @@ public class WorkOrder extends AppCompatActivity {
                                 new String[]{"work_order_content", "work_order_status", "work_order_number","work_order_time"},
                                 new int[]{R.id.work_order_content, R.id.work_order_status, R.id.work_order_number, R.id.work_order_time});
                         workOrderList.setAdapter(adapter);
+                        workOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Map<String, String> map = (Map<String, String>)parent.getItemAtPosition(position);
+                                new SweetAlertDialog(WorkOrder.this)
+                                        .setTitleText(map.get("work_order_number"))
+                                        .setContentText(map.get("work_order_content") + "\n" + map.get("work_order_time") + "\n"
+                                        +map.get("work_order_status"))
+                                        .show();
+                            }
+                        });
                     } catch (Exception e) {
                         Log.i("zhengsheng_exp2", String.valueOf(e));
                         e.printStackTrace();
