@@ -760,19 +760,16 @@ public class MainActivity extends AppCompatActivity {
             }
             LineDataSet set1 = new LineDataSet(values, "DataSet 1");
             set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-            set1.setColor(ColorTemplate.getHoloBlue());
-            set1.setValueTextColor(ColorTemplate.getHoloBlue());
-            set1.setLineWidth(1.5f);
-            set1.setDrawCircles(false);
-            set1.setDrawValues(false);
+            set1.setColor(Color.parseColor("#ff0000"));
+            set1.setLineWidth(2.5f);
+            set1.setDrawCircles(true);
             set1.setFillAlpha(65);
             set1.setFillColor(ColorTemplate.getHoloBlue());
             set1.setHighLightColor(Color.rgb(244, 117, 117));
             set1.setDrawCircleHole(false);
             set1.setDrawValues(true);
-            set1.setValueTextColor(Color.BLACK);
             LineData data = new LineData(set1);
-            data.setValueTextColor(Color.WHITE);
+            data.setValueTextColor(Color.BLACK);
             data.setValueTextSize(9f);
             return data;
         }
