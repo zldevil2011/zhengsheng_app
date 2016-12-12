@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -33,6 +34,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.jude.rollviewpager.RollPagerView;
@@ -60,7 +62,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -744,18 +749,38 @@ public class MainActivity extends AppCompatActivity {
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
 
+            xAxis.setCenterAxisLabels(true);
+            xAxis.setGranularity(1f); // one hour
+            xAxis.setValueFormatter(new IAxisValueFormatter() {
+
+                private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
+
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+
+                    long millis = TimeUnit.HOURS.toMillis((long) value);
+                    return mFormat.format(new Date(millis));
+                }
+            });
 
 
             lineChart.animateY(1000); // 立即执行的动画,Y轴
         }
         public LineData getLineData(int count, double YV[]) {
-            long now = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis());
+            Calendar calendar = Calendar.getInstance();
+            int hours = calendar.get(Calendar.HOUR_OF_DAY); // 时
+            int minutes = calendar.get(Calendar.MINUTE);    // 分
+            int seconds = calendar.get(Calendar.SECOND);    // 秒
+            long sub = hours * 3600 + minutes * 60  + seconds;
+            long now = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis()) - hours;
+            Log.i("zhengsheng_hour", String.valueOf(now));
             ArrayList<Entry> values = new ArrayList<Entry>();
-            int from = 0;
-            int to = from + count;
-//            int to = now + count;
-            for (int x = from; x < to; x++) {
-                float y = (float) YV[x];
+            float from = now;
+//            int to = from + count;
+            float to = now + count;
+            int id = 0;
+            for (float x = from; x < to; x++) {
+                float y = (float) YV[id++];
                 values.add(new Entry(x, y)); // add one entry per hour
             }
             LineDataSet set1 = new LineDataSet(values, "DataSet 1");
