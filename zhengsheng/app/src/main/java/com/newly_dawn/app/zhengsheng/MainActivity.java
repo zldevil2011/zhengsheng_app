@@ -645,7 +645,30 @@ public class MainActivity extends AppCompatActivity {
             XAxis xAxis = barChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
-
+            xAxis.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+                    return String.valueOf((int)value) + "月";
+                }
+            });
+            YAxis leftAxis = barChart.getAxisLeft();
+            leftAxis.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+                    if(value > 10000){
+                        return (value / 10000) + "w";
+                    }
+                    else if(value > 1000){
+                        return (value / 1000) + "k";
+                    }else if(value < -10000){
+                        return (value / 10000) + "w";
+                    }else if(value < -1000){
+                        return (value / 1000) + "k";
+                    }else{
+                        return String.valueOf(value);
+                    }
+                }
+            });
 
             barChart.animateY(1000); // 立即执行的动画,Y轴
         }
@@ -657,7 +680,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
             for (int i = 0; i < count; i++) {
                 float value = (float) YV[i];
-                yValues.add(new BarEntry(i, value, "测试饼状图"));
+                yValues.add(new BarEntry((i+1), value));
             }
             // y轴的数据集合
             BarDataSet barDataSet = new BarDataSet(yValues, "测试饼状图");
@@ -754,16 +777,26 @@ public class MainActivity extends AppCompatActivity {
             xAxis.setValueFormatter(new IAxisValueFormatter() {
 
                 private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
-
                 @Override
                 public String getFormattedValue(float value, AxisBase axis) {
-
                     long millis = TimeUnit.HOURS.toMillis((long) value);
                     return mFormat.format(new Date(millis));
                 }
             });
-
-
+            YAxis leftAxis = lineChart.getAxisLeft();
+            leftAxis.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+                    if(value > 10000){
+                        return (value / 10000) + "w";
+                    }
+                    else if(value > 1000){
+                        return (value / 1000) + "k";
+                    }else{
+                        return String.valueOf(value);
+                    }
+                }
+            });
             lineChart.animateY(1000); // 立即执行的动画,Y轴
         }
         public LineData getLineData(int count, double YV[]) {
@@ -795,7 +828,7 @@ public class MainActivity extends AppCompatActivity {
             set1.setDrawValues(true);
             LineData data = new LineData(set1);
             data.setValueTextColor(Color.BLACK);
-            data.setValueTextSize(9f);
+            data.setValueTextSize(5f);
             return data;
         }
     }
