@@ -50,6 +50,10 @@
         <activity
             android:name=".user.feedback"
             android:label="@string/title_activity_feedback"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".data.data_list"
+            android:label="@string/title_activity_data_list"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

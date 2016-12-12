@@ -16,4 +16,5 @@
     <string name="title_activity_contactus">contactus</string>
     <string name="title_activity_personal_info">personalInfo</string>
     <string name="title_activity_feedback">feedback</string>
+    <string name="title_activity_data_list">data_list</string>
 </resources>

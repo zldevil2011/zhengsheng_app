@@ -107,12 +107,13 @@ public class login extends AppCompatActivity {
             return result;
         }
         protected void onPostExecute(Map<String, String> result) {
-            pDialog.cancel();
             if (result == null) {
+                pDialog.dismiss();
                 Toast.makeText(login.this, "登录失败", Toast.LENGTH_SHORT).show();
             } else {
                 if (result.get("code").equals("200")) {
                     try {
+                        pDialog.dismiss();
                         JSONObject jsonObject = new JSONObject(result.get("text"));
                         JSONObject user = new JSONObject(jsonObject.getString("user"));
                         String username = user.getString("username");

@@ -21,9 +21,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.jude.rollviewpager.RollPagerView;
 import com.jude.rollviewpager.adapter.StaticPagerAdapter;
 import com.jude.rollviewpager.hintview.ColorPointHintView;
+import com.newly_dawn.app.zhengsheng.data.data_list;
 import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
 import com.newly_dawn.app.zhengsheng.user.Alarm;
 import com.newly_dawn.app.zhengsheng.user.WorkOrder;
@@ -49,11 +64,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private BarChart mBarChart;
+    private BarData mBarData;
+    private BarCharts mBarCharts;
+
+    private LineChart mLineChart;
+    private LineData mLineData;
+    private LineCharts mLineCharts;
+
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private LayoutInflater mInflater;
@@ -106,7 +132,9 @@ public class MainActivity extends AppCompatActivity {
             String user_id = sharedPreferences.getString("user_id", null);
             String username = sharedPreferences.getString("username", null);
             String device_id = sharedPreferences.getString("device_id", null);
-
+            if(user_id == null|| username==null||device_id==null){
+                return;
+            }
             TextView usernameTeV = (TextView) mine.findViewById(R.id.personal_username);
             TextView deviceIdTeV = (TextView) mine.findViewById(R.id.personal_device_id);
             usernameTeV.setText(username);
@@ -360,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
     public class registerBtnClickListener implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-            Intent register_intent = new Intent(MainActivity.this, Register.class);
+            Intent register_intent = new Intent(MainActivity.this, data_list.class);
             startActivity(register_intent);
         }
     }
@@ -432,9 +460,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "登陆失败", Toast.LENGTH_SHORT).show();
             } else {
                 if (result.get("code").equals("200")) {
+                    Log.i("zhengsheng_error", String.valueOf(result.get("text")));
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
-//                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
 //                        显示工单数量
                         String workOrderLen = jsonObject.getString("workorder_len");
                         TextView workOrderLenTex = (TextView)data.findViewById(R.id.workOrderLen);
@@ -448,10 +476,7 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray today_power = new JSONArray(today_data.getString("today_power"));
 
 
-                        int xmin = 0;
-                        int xmax = 30;
-                        int ymin = 0;
-                        float ymax = 0;
+
 
                         int len = today_hour.length();
                         double[] today_hour_arr = new double[len];
@@ -469,115 +494,23 @@ public class MainActivity extends AppCompatActivity {
                             }catch (Exception e){
                                 today_power_arr[i] = 0;
                             }
-
-//                            month_day_arr[i] = today_hour.getDouble(i);
-                            xmax = i + 1;
-
-                            if(ymax < today_power_arr[i]){
-                                ymax = (float) (today_power.getDouble(ret_data_index - 1));
-                            }
                         }
-//                        for(int i = 0; i < today_hour_arr.length; ++i){
-//                            Log.i("zhengsheng_arr" + i,String.valueOf(today_hour_arr[i]));
-//                        }
-//                        for(int i = 0; i < today_power_arr.length; ++i){
-//                            Log.i("zhengsheng_arr" + i,String.valueOf(today_power_arr[i]));
-//                        }
-                        List todayX = new ArrayList();
-                        List todayY = new ArrayList();
-                        todayX.add(today_hour_arr);
-                        todayY.add(today_power_arr);
+                        mLineCharts = new LineCharts();
+                        mLineChart = (LineChart) data.findViewById(R.id.todayhElectricityData);
+                        double[] ap = new double[10];
+                        mLineData = mLineCharts.getLineData(len, today_power_arr);
 
-                        String[] titles = new String[] { "电能"};
-                        XYMultipleSeriesDataset dataset = buildDataset(titles, todayX, todayY);
-
-                        int[] colors = new int[] { Color.BLUE};
-                        PointStyle[] styles = new PointStyle[] { PointStyle.TRIANGLE};
-                        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, true);
-
-                        setChartSettings(renderer, "", "时间","电能(Kwh)", xmin, xmax, ymin, ymax , Color.BLACK, Color.BLACK);
-                        View newView = ChartFactory.getLineChartView(MainActivity.this, dataset, renderer);
-                        LinearLayout today = (LinearLayout)data.findViewById(R.id.today);
-                        today.removeAllViews();
-                        today.addView(newView);
-                    } catch (JSONException e) {
+                        mLineCharts.showLineChart(mLineChart, mLineData);
+                    } catch (Exception e) {
                         Log.i("zhengsheng_exp2", String.valueOf(e));
                         e.printStackTrace();
                     }
-//                    Log.i("zhengsheng_exp3", result.get("text"));
                 } else {
                     Log.i("zhengsheng_exp4", result.get("code"));
                 }
             }
         }
     }
-
-    protected XYMultipleSeriesDataset buildDataset(String[] titles, List xValues, List yValues) {
-        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-        int length = titles.length;                  //有几条线
-        for (int i = 0; i < length; i++)
-        {
-            XYSeries series = new XYSeries(titles[i]);    //根据每条线的名称创建
-            double[] xV = (double[]) xValues.get(i);                 //获取第i条线的数据
-            double[] yV = (double[]) yValues.get(i);
-            int seriesLength = xV.length;                 //有几个点
-            Log.i("zhaolong_len", String.valueOf(seriesLength));
-            for (int k = 0; k < seriesLength; k++)        //每条线里有几个点
-            {
-                series.add(xV[k], yV[k]);
-            }
-
-            dataset.addSeries(series);
-        }
-
-        return dataset;
-    }
-
-    protected XYMultipleSeriesRenderer buildRenderer(int[] colors, PointStyle[] styles, boolean fill)
-    {
-
-        XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-        renderer.setApplyBackgroundColor(true);
-        renderer.setBackgroundColor(Color.WHITE);
-        renderer.setMarginsColor(Color.WHITE);
-        renderer.setZoomEnabled(false, false);
-        renderer.setPanEnabled(false, false);
-        renderer.setLabelsColor(Color.BLACK);
-        renderer.setMargins(new int[] { 20, 50, 15, 20 });
-        renderer.setZoomButtonsVisible(true);//缩放按钮
-        int length = colors.length;
-        renderer.setShowGrid(true);
-        for (int i = 0; i < length; i++)
-        {
-            XYSeriesRenderer r = new XYSeriesRenderer();
-            r.setColor(colors[i]);
-            r.setPointStyle(styles[i]);
-            r.setFillPoints(fill);
-            r.setDisplayChartValues(true);
-            renderer.addSeriesRenderer(r);
-        }
-        return renderer;
-    }
-
-    protected void setChartSettings(XYMultipleSeriesRenderer renderer, String title, String xTitle,String yTitle, double xMin,
-                                    double xMax, double yMin, double yMax, int axesColor,int labelsColor) {
-        renderer.setChartTitle(title);
-        renderer.setXTitle(xTitle);
-        renderer.setYTitle(yTitle);
-        renderer.setXAxisMin(xMin);
-        renderer.setXAxisMax(xMax);
-        renderer.setXLabels(20);
-        renderer.setLabelsTextSize(25);
-        renderer.setAxisTitleTextSize(20);
-        renderer.setYAxisMin(yMin);
-        renderer.setYAxisMax(yMax);
-        renderer.setAxesColor(axesColor);
-        renderer.setApplyBackgroundColor(true);
-        renderer.setBackgroundColor(Color.WHITE);
-        renderer.setLabelsColor(labelsColor);
-    }
-
-
 
 //    打开之后联网获取当前用户当月的用电数据
     public class paintingMonth extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
@@ -611,86 +544,238 @@ public class MainActivity extends AppCompatActivity {
                 if (result.get("code").equals("200")) {
                     try {
                         JSONObject jsonObject = new JSONObject(result.get("text"));
-//                        Log.i("zhengsheng_exp_json", String.valueOf(jsonObject));
-
                         JSONObject month_data = new JSONObject(jsonObject.getString("month_data"));
                         JSONArray month_day = new JSONArray(month_data.getString("month_day"));
                         JSONArray month_power = new JSONArray(month_data.getString("month_power"));
-//                        Log.i("zhengsheng_exp_month", String.valueOf(month_day));
-
-                        double xmin = 0;
-                        double xmax = -1;
-                        double ymin = 0;
-                        double ymax = -1;
                         int len = month_day.length();
-                        double[] month_day_arr = new double[31];
-                        double[] month_power_arr = new double[31];
+                        double[] month_day_arr = new double[len];
+                        double[] month_power_arr = new double[len];
                         for(int i = 0; i < len; ++i){
-//                            Log.i("zhengsheng_exp_day", month_day.getString(i));
                             month_day_arr[i] = month_day.getDouble(i);
-                            xmax = i + 1;
-
                             month_power_arr[i] = month_power.getDouble(i);
-                            if(month_power.getDouble(i) > ymax){
-                                ymax = month_power.getDouble(i);
-                            }
                         }
-
-                        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-                        int nr = len;
-                        for (int i = 0; i < 1; i++) {
-                            CategorySeries series = new CategorySeries("电量 " + (i + 1));
-                            for (int k = 0; k < nr; k++) {
-                                series.add(month_power_arr[k]);
-                            }
-                            dataset.addSeries(series.toXYSeries());
-                        }
-                        XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-
-                        SimpleSeriesRenderer render = new SimpleSeriesRenderer();
-                        render.setColor(Color.BLUE);
-                        renderer.addSeriesRenderer(render);
-                        renderer.setBarSpacing(1.0);
-                        renderer.setApplyBackgroundColor(true);
-                        renderer.setBackgroundColor(Color.WHITE);
-                        renderer.setMarginsColor(Color.WHITE);
-                        renderer.setZoomEnabled(false, false);
-                        renderer.setPanEnabled(false, false);
-                        renderer.setLabelsTextSize(25);
-                        renderer.setAxisTitleTextSize(20);
-                        renderer.setXLabels(nr);
-                        renderer.setAxesColor(Color.BLACK);
-                        renderer.setLabelsColor(Color.BLACK);
-                        renderer.setMargins(new int[] { 20, 50, 15, 20 });
-                        setChartSettingsPie(renderer, xmin, xmax, ymin, ymax);
-
-                        View newView = ChartFactory.getBarChartView(MainActivity.this, dataset, renderer, org.achartengine.chart.BarChart.Type.DEFAULT);
-
-                        LinearLayout month = (LinearLayout)data.findViewById(R.id.month);
-                        month.removeAllViews();
-                        month.addView(newView);
+                        mBarCharts = new BarCharts();
+                        mBarChart = (BarChart)data.findViewById(R.id.monthElectricityData);
+                        mBarData = mBarCharts.getBarData(month_day.length(), month_power_arr);
+                        mBarCharts.showBarChart(mBarChart, mBarData);
                     } catch (JSONException e) {
-                        Log.i("zhengsheng_exp2", String.valueOf(e));
                         e.printStackTrace();
                     }
-//                    Log.i("zhengsheng_exp3", result.get("text"));
                 } else {
                     Log.i("zhengsheng_exp4", result.get("code"));
                 }
             }
         }
     }
+    public class BarCharts {
 
-    /**
-     * setChartSettings 方法设置了下坐标轴样式。
-     */
-    private void setChartSettingsPie(XYMultipleSeriesRenderer renderer, double xmin, double xmax, double ymin, double ymax) {
-        renderer.setChartTitle("");
-        renderer.setXTitle("时间");
-        renderer.setYTitle("用电量");
-        renderer.setXAxisMin(xmin);
-        renderer.setXAxisMax(xmax);
-        renderer.setYAxisMin(ymin);
-        renderer.setYAxisMax(ymax);
+        private String[] color = {
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD"};
+
+        public void showBarChart(BarChart barChart, BarData barData) {
+            // 数据描述
+            // 如果没有数据的时候，会显示这个，类似ListView的EmptyView
+            barChart.setNoDataText("You need to provide data for the chart.");
+            Description ap = new Description();
+            ap.setText("");
+            barChart.setDescription(ap);
+            // 是否显示表格颜色
+            barChart.setDrawGridBackground(false);
+            // 设置是否可以触摸
+            barChart.setTouchEnabled(true);
+            // 是否可以拖拽
+            barChart.setDragEnabled(false);
+            // 是否可以缩放
+            barChart.setScaleEnabled(false);
+            // 集双指缩放
+            barChart.setPinchZoom(false);
+            // 设置背景
+            barChart.setBackgroundColor(Color.parseColor("#01000000"));
+            // 如果打开，背景矩形将出现在已经画好的绘图区域的后边。
+            barChart.setDrawGridBackground(false);
+            // 集拉杆阴影
+            barChart.setDrawBarShadow(false);
+            // 图例
+            barChart.getLegend().setEnabled(false);
+            // 设置数据
+            barChart.setData(barData);
+
+            // 隐藏右边的坐标轴 (就是右边的0 - 100 - 200 - 300 ... 和图表中横线)
+            barChart.getAxisRight().setEnabled(false);
+            // 隐藏左边的左边轴 (同上)
+//        barChart.getAxisLeft().setEnabled(false);
+
+            // 网格背景颜色
+            barChart.setGridBackgroundColor(Color.parseColor("#00000000"));
+            // 是否显示表格颜色
+            barChart.setDrawGridBackground(false);
+            // 设置边框颜色
+            barChart.setBorderColor(Color.parseColor("#00000000"));
+            // 说明颜色
+            // 拉杆阴影
+            barChart.setDrawBarShadow(false);
+            // 打开或关闭绘制的图表边框。（环绕图表的线）
+            barChart.setDrawBorders(false);
+
+
+            Legend mLegend = barChart.getLegend(); // 设置比例图标示
+            // 设置窗体样式
+            mLegend.setForm(Legend.LegendForm.CIRCLE);
+            // 字体
+            mLegend.setFormSize(4f);
+            // 字体颜色
+            mLegend.setTextColor(Color.parseColor("#00000000"));
+
+
+            XAxis xAxis = barChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+
+
+            barChart.animateY(1000); // 立即执行的动画,Y轴
+        }
+        public BarData getBarData(int count, double YV[]) {
+            ArrayList<String> xValues = new ArrayList<String>();
+            for (int i = 0; i < count; i++) {
+                xValues.add(""+(i+1)+"号");
+            }
+            ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
+            for (int i = 0; i < count; i++) {
+                float value = (float) YV[i];
+                yValues.add(new BarEntry(i, value, "测试饼状图"));
+            }
+            // y轴的数据集合
+            BarDataSet barDataSet = new BarDataSet(yValues, "测试饼状图");
+            ArrayList<Integer> colors = new ArrayList<Integer>();
+            for(int i = 0;i < count ;i++){
+                colors.add(Color.parseColor(color[i]));
+            }
+            barDataSet.setColors(colors);
+            // 设置栏阴影颜色
+            barDataSet.setBarShadowColor(Color.parseColor("#01000000"));
+            barDataSet.setValueTextColor(Color.parseColor("#000000"));
+            // 绘制值
+            barDataSet.setDrawValues(true);
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            dataSets.add(barDataSet);
+
+            BarData data1 = new BarData(dataSets);
+
+            return data1;
+        }
     }
+
+    public class LineCharts {
+
+        private String[] color = {
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD",
+                "#C4FF8E","#FFF88D","#FFD38C","#8CEBFF","#FF8F9D","#6BF3AD"};
+
+        public void showLineChart(LineChart lineChart, LineData lineData) {
+            // 数据描述
+            // 如果没有数据的时候，会显示这个，类似ListView的EmptyView
+            lineChart.setNoDataText("You need to provide data for the chart.");
+            Description ap = new Description();
+            ap.setText("");
+            lineChart.setDescription(ap);
+            // 是否显示表格颜色
+            lineChart.setDrawGridBackground(false);
+            // 设置是否可以触摸
+            lineChart.setTouchEnabled(true);
+            // 是否可以拖拽
+            lineChart.setDragEnabled(false);
+            // 是否可以缩放
+            lineChart.setScaleEnabled(false);
+            // 集双指缩放
+            lineChart.setPinchZoom(false);
+            // 设置背景
+            lineChart.setBackgroundColor(Color.parseColor("#01000000"));
+            // 如果打开，背景矩形将出现在已经画好的绘图区域的后边。
+            lineChart.setDrawGridBackground(false);
+            // 图例
+            lineChart.getLegend().setEnabled(false);
+            // 设置数据
+            lineChart.setData(lineData);
+
+            // 隐藏右边的坐标轴 (就是右边的0 - 100 - 200 - 300 ... 和图表中横线)
+            lineChart.getAxisRight().setEnabled(false);
+            // 隐藏左边的左边轴 (同上)
+
+            // 网格背景颜色
+            lineChart.setGridBackgroundColor(Color.parseColor("#00000000"));
+            // 是否显示表格颜色
+            lineChart.setDrawGridBackground(false);
+            // 设置边框颜色
+            lineChart.setBorderColor(Color.parseColor("#00000000"));
+            // 打开或关闭绘制的图表边框。（环绕图表的线）
+            lineChart.setDrawBorders(false);
+
+
+            Legend mLegend = lineChart.getLegend(); // 设置比例图标示
+            // 设置窗体样式
+            mLegend.setForm(Legend.LegendForm.CIRCLE);
+            // 字体
+            mLegend.setFormSize(4f);
+            // 字体颜色
+            mLegend.setTextColor(Color.parseColor("#00000000"));
+
+
+            XAxis xAxis = lineChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+
+
+
+            lineChart.animateY(1000); // 立即执行的动画,Y轴
+        }
+        public LineData getLineData(int count, double YV[]) {
+            long now = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis());
+            ArrayList<Entry> values = new ArrayList<Entry>();
+            int from = 0;
+            int to = from + count;
+//            int to = now + count;
+            for (int x = from; x < to; x++) {
+                float y = (float) YV[x];
+                values.add(new Entry(x, y)); // add one entry per hour
+            }
+            LineDataSet set1 = new LineDataSet(values, "DataSet 1");
+            set1.setAxisDependency(YAxis.AxisDependency.LEFT);
+            set1.setColor(ColorTemplate.getHoloBlue());
+            set1.setValueTextColor(ColorTemplate.getHoloBlue());
+            set1.setLineWidth(1.5f);
+            set1.setDrawCircles(false);
+            set1.setDrawValues(false);
+            set1.setFillAlpha(65);
+            set1.setFillColor(ColorTemplate.getHoloBlue());
+            set1.setHighLightColor(Color.rgb(244, 117, 117));
+            set1.setDrawCircleHole(false);
+            set1.setDrawValues(true);
+            set1.setValueTextColor(Color.BLACK);
+            LineData data = new LineData(set1);
+            data.setValueTextColor(Color.WHITE);
+            data.setValueTextSize(9f);
+            return data;
+        }
+    }
+
 }
