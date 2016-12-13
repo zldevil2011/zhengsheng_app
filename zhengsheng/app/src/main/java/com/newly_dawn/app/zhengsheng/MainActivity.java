@@ -3,6 +3,8 @@ package com.newly_dawn.app.zhengsheng;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
@@ -14,10 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +46,7 @@ import com.jude.rollviewpager.RollPagerView;
 import com.jude.rollviewpager.adapter.StaticPagerAdapter;
 import com.jude.rollviewpager.hintview.ColorPointHintView;
 import com.newly_dawn.app.zhengsheng.data.data_list;
+import com.newly_dawn.app.zhengsheng.tools.Browser;
 import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
 import com.newly_dawn.app.zhengsheng.user.Alarm;
 import com.newly_dawn.app.zhengsheng.user.WorkOrder;
@@ -50,18 +56,13 @@ import com.newly_dawn.app.zhengsheng.user.Register;
 import com.newly_dawn.app.zhengsheng.user.Contactus;
 import com.newly_dawn.app.zhengsheng.user.personalInfo;
 
-import org.achartengine.ChartFactory;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.model.CategorySeries;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
-import org.achartengine.renderer.SimpleSeriesRenderer;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -213,14 +214,247 @@ public class MainActivity extends AppCompatActivity {
         mRollViewPager.setHintView(new ColorPointHintView(this, Color.YELLOW, Color.WHITE));
         //mRollViewPager.setHintView(new TextHintView(this));
         //mRollViewPager.setHintView(null);
+
+        try {
+            String IP = getString(R.string.IP);
+            String targetUrl = IP + "/api/v1/newsList/";
+            Map<String, String> dataMp = new HashMap<>();
+            dataMp.put("url", targetUrl);
+            new getNewsSync().execute(dataMp);
+        }catch (Exception e){
+            Log.i("zhengsheng_ap", String.valueOf(e));
+        }
+    }
+    private int image_no = 0;
+    private int news_total_num = 10;
+    private Bitmap[] image_list = new Bitmap[100];
+    private String[] news_title = new String[100];
+    private String[] news_link = new String[100];
+    private String[] news_image_link = new String[100];
+    private ListView news_listview;
+    public class getNewsSync extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
+        Map<String, String> result = new HashMap<>();
+        @Override
+        protected void onPreExecute() {}
+        @Override
+        protected Map<String, String> doInBackground(Map<String, String>... params) {
+            String url = params[0].get("url");
+            try{
+                HttpRequest httpRequest = new HttpRequest(url);
+                httpRequest.get_connect();
+                String responseCode = httpRequest.getResponseCode();
+                String responseText = httpRequest.getResponseText();
+                result.put("code", responseCode);
+                result.put("text", responseText);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            Log.i("zhengsheng_erro13", "ok_");
+            return result;
+        }
+
+        protected void onPostExecute(Map<String, String> result) {
+            if (result == null) {
+                Toast.makeText(MainActivity.this, "获取新闻失败", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    Log.i("zhengsheng_141z", result.get("text"));
+                    String text = result.get("text");
+                    JSONObject jsonObject = new JSONObject(text);
+                    JSONArray news_list = jsonObject.getJSONArray("news_list");
+                    Log.i("zhengsheng_141x", String.valueOf(news_list));
+                    int len = news_list.length();
+                    Log.i("zhengsheng_141y", String.valueOf(len));
+                    news_total_num = 5;
+                    for(int i = 0; i < len; ++i){
+                        JSONObject tmp = news_list.getJSONObject(i);
+                        news_title[i] = tmp.getString("name");
+                        news_link[i] = tmp.getString("link").replace("\\/","/");
+                        news_image_link[i] = tmp.getString("img").replace("\\/","/");
+                        Log.i("zhengsheng_141w", String.valueOf(news_image_link[i]));
+                    }
+                    Map<String, String> dataMp = new HashMap<>();
+                    dataMp.put("url", news_image_link[0]);
+                    dataMp.put("idx", String.valueOf(0));
+                    for(int j = 0; j < len; ++j) {
+                        Log.i("zhaolong_title", String.valueOf(news_title[j]));
+                    }
+                    new downloadImageSync().execute(dataMp);
+                    news_listview = (ListView)index.findViewById(R.id.news_list);
+                    loadNewsList();
+//                    if(len > 0){
+//                        String start_url = news_image_link[0];
+//                        Map<String, String> dataMp = new HashMap<>();
+//                        dataMp.put("url", start_url);
+//                        new downloadImageSync().execute(dataMp);
+//                    }
+                    Log.i("zhengsheng_151", "load success");
+                }catch (Exception e){
+                    Log.i("zhengsheng_141", String.valueOf(e));
+                }
+            }
+        }
+    }
+    public class downloadImageSync extends AsyncTask<Map<String,String>, Void, Map<String, Object>> {
+        Map<String, Object> result = new HashMap<>();
+        @Override
+        protected void onPreExecute() {}
+        @Override
+        protected Map<String, Object> doInBackground(Map<String, String>... params) {
+            String url = params[0].get("url");
+            String idx = params[0].get("idx");
+            Bitmap bitmap=null;
+            URL myFileURL;
+            try{
+                Log.i("zhengsheng_URL", url);
+                myFileURL = new URL(url);
+                HttpURLConnection conn=(HttpURLConnection)myFileURL.openConnection();
+                conn.setConnectTimeout(6000);
+                conn.setDoInput(true);
+                conn.setUseCaches(true);
+                InputStream is = conn.getInputStream();
+                bitmap = BitmapFactory.decodeStream(is);
+                is.close();
+            }catch(Exception e){
+                e.printStackTrace();
+                Log.i("zhengsheng_URL_EXC", String.valueOf(e));
+            }
+            result.put("img", bitmap);
+            result.put("idx", idx);
+            return result;
+        }
+
+        protected void onPostExecute(Map<String, Object> result) {
+            if (result == null) {
+                Toast.makeText(MainActivity.this, "获取图片失败", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    Bitmap img = (Bitmap) result.get("img");
+                    int idx = Integer.parseInt(result.get("idx").toString());
+                    List<Map<String,Object>> listItems = new ArrayList<>();
+                    for(int j = 0; j < news_total_num; ++j) {
+                        Log.i("zhaolong", "idx = " + String.valueOf(idx) + String.valueOf(news_title[j]));
+                    }
+                    for(int i = 0; i < news_total_num; ++i){
+                        Log.i("zhengsheng_index", String.valueOf(i));
+                        Map<String, Object> map = new HashMap<>();
+                        if(i == idx){
+                            map.put("news_img", img);
+                            image_list[i] = img;
+                        }else{
+                            map.put("news_img", image_list[i]);
+                        }
+                        map.put("news_title", news_title[i]);
+                        map.put("news_link", news_link[i]);
+                        map.put("news_author", "中国电力新闻");
+                        map.put("news_time","2015-10-10 1" + String.valueOf(i) + ":00:00");
+                        listItems.add(map);
+                    }
+                    Log.i("zhengsheng_index_total", String.valueOf(listItems.size()));
+                    Log.i("zhengsheng_index_list", String.valueOf(listItems));
+                    SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, listItems, R.layout.news_list_item,
+                            new String[]{"news_img", "news_title", "news_author", "news_time"}, new int[]{R.id.news_img, R.id.news_title, R.id.news_author, R.id.news_time});
+                    adapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+
+                        public boolean setViewValue(View view, Object data,
+                                                    String textRepresentation) {
+                            //判断是否为我们要处理的对象
+                            if(view instanceof ImageView  && data instanceof Bitmap){
+                                ImageView iv = (ImageView) view;
+
+                                iv.setImageBitmap((Bitmap) data);
+                                return true;
+                            }else
+                                return false;
+                        }
+                    });
+                    news_listview.setAdapter(adapter);
+                    setListViewHeightBasedOnChildren(news_listview);
+                    Map<String, String> dataMp = new HashMap<>();
+                    if(idx < news_total_num){
+                        idx ++;
+                        dataMp.put("url", news_image_link[idx]);
+                        dataMp.put("idx", String.valueOf(idx));
+                        new downloadImageSync().execute(dataMp);
+                    }
+                }catch (Exception e){
+                    Log.i("zhengsheng_142", String.valueOf(e));
+                }
+            }
+        }
+    }
+    public void loadNewsList(){
+
+        List<Map<String,Object>> listItems = new ArrayList<>();
+        for(int i = 0; i < news_total_num; ++i){
+            Log.i("zhengsheng_index", String.valueOf(i));
+            Map<String, Object> map = new HashMap<>();
+            map.put("news_img", image_list[i]);
+            map.put("news_title", news_title[i]);
+            map.put("news_link", news_link[i]);
+            map.put("news_author", "Author");
+            map.put("news_time","2015-10-10 12:00:00");
+            listItems.add(map);
+        }
+        Log.i("zhengsheng_index", String.valueOf(listItems.size()));
+        Log.i("zhengsheng_index", String.valueOf(listItems));
+        SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, listItems, R.layout.news_list_item,
+                new String[]{"news_img", "news_title", "news_author", "news_time"}, new int[]{R.id.news_img, R.id.news_title, R.id.news_author, R.id.news_time});
+        adapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+
+            public boolean setViewValue(View view, Object data,
+                                        String textRepresentation) {
+                //判断是否为我们要处理的对象
+                if(view instanceof ImageView  && data instanceof Bitmap){
+                    ImageView iv = (ImageView) view;
+
+                    iv.setImageBitmap((Bitmap) data);
+                    return true;
+                }else
+                    return false;
+            }
+        });
+        news_listview.setAdapter(adapter);
+        setListViewHeightBasedOnChildren(news_listview);
+        news_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Map<String, String> map = (Map<String, String>)parent.getItemAtPosition(position);
+                Intent intent = new Intent();
+                intent.putExtra("url", map.get("news_link"));
+                intent.setClass(MainActivity.this, Browser.class);
+                startActivity(intent);
+            }
+        });
+    }
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        // 获取ListView对应的Adapter
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0, len = listAdapter.getCount(); i < len; i++) {
+            // listAdapter.getCount()返回数据项的数目
+            View listItem = listAdapter.getView(i, null, listView);
+            // 计算子项View 的宽高
+            listItem.measure(0, 0);
+            // 统计所有子项的总高度
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        // listView.getDividerHeight()获取子项间分隔符占用的高度
+        // params.height最后得到整个ListView完整显示需要的高度
+        listView.setLayoutParams(params);
     }
     private class TestNormalAdapter extends StaticPagerAdapter {
         private int[] imgs = {
                 R.drawable.zhengsheng,
                 R.drawable.zhengsheng2,
         };
-
-
         @Override
         public View getView(ViewGroup container, int position) {
             ImageView view = new ImageView(container.getContext());
