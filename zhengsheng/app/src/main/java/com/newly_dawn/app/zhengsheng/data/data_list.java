@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -75,7 +76,6 @@ public class data_list extends AppCompatActivity {
         }catch (Exception e){
             Log.i("zhengsheng_error2", String.valueOf(e));
         }
-
     }
     public void loadData(){
         try {
@@ -93,7 +93,6 @@ public class data_list extends AppCompatActivity {
             Map<String, String> dataMap = new HashMap<>();
             dataMap.put("url", targetUrl);
             dataMap.put("user_id", user_id);
-
             new getDetailSync().execute(dataMap);
         }catch (Exception e){
             Log.i("zhengsheng_error1", String.valueOf(e));
