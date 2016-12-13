@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             dataMqp.put("user_id", user_id);
             new paintingMonth().execute(dataMqp);
         }catch (Exception e){
-
+            Log.i("zhengsheng_bug", String.valueOf(e));
         }
     }
     //ViewPager适配器
@@ -250,6 +250,15 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.setOnClickListener(new alarmListBtnClickListener());
         LinearLayout workOrder_list_btn = (LinearLayout)data.findViewById(R.id.workOrder_list_btn);
         workOrder_list_btn.setOnClickListener(new workOrderListBtnClickListener());
+
+        Button dataDetailsBtn = (Button)data.findViewById(R.id.dataDetailsBtn);
+        dataDetailsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent dataDetail_intent = new Intent(MainActivity.this, data_list.class);
+                startActivity(dataDetail_intent);
+            }
+        });
     }
     public class alarmListBtnClickListener implements View.OnClickListener{
 
@@ -349,11 +358,11 @@ public class MainActivity extends AppCompatActivity {
         contactUsTex.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
-//                startActivity(contactUs_intent);
                 try {
-                    Intent register_intent = new Intent(MainActivity.this, data_list.class);
-                    startActivity(register_intent);
+                    Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
+                    startActivity(contactUs_intent);
+
+
                 }catch (Exception e){
                     Log.i("zhengsheng_error5", String.valueOf(e));
                 }
@@ -506,6 +515,9 @@ public class MainActivity extends AppCompatActivity {
                                 today_power_arr[i] = 0;
                             }
                         }
+                        if(len == 0){
+                            return;
+                        }
                         mLineCharts = new LineCharts();
                         mLineChart = (LineChart) data.findViewById(R.id.todayhElectricityData);
                         double[] ap = new double[10];
@@ -564,6 +576,9 @@ public class MainActivity extends AppCompatActivity {
                         for(int i = 0; i < len; ++i){
                             month_day_arr[i] = month_day.getDouble(i);
                             month_power_arr[i] = month_power.getDouble(i);
+                        }
+                        if(month_day_arr.length == 0){
+                            return;
                         }
                         mBarCharts = new BarCharts();
                         mBarChart = (BarChart)data.findViewById(R.id.monthElectricityData);

@@ -60,6 +60,17 @@ public class data_list extends AppCompatActivity {
         try{
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_data_list);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            toolbar.setTitle("监测数据");
+            toolbar.setTitleTextColor(Color.WHITE);
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    data_list.this.finish();
+                }
+            });
             loadData();
         }catch (Exception e){
             Log.i("zhengsheng_error2", String.valueOf(e));
@@ -169,16 +180,26 @@ public class data_list extends AppCompatActivity {
                         }
                         Log.i("zhengsheng_error7", String.valueOf(reactive_power_data));
                         try {
-                            line_data5 = mLineCharts.getLineData(reactive_power_x_arr, reactive_power_y_arr);
-                            line_data3 = mLineCharts.getLineData(power_factor_x_arr, power_factor_y_arr);
-                            line_data1 = mLineCharts.getLineData(voltage_x_arr, voltage_y_arr);
-                            line_data4 = mLineCharts.getLineData(active_power_x_arr, active_power_y_arr);
-                            line_data2 = mLineCharts.getLineData(electric_current_x_arr, electric_current_y_arr);
-                            mLineCharts.showLineChart(line1, line_data1);
-                            mLineCharts.showLineChart(line2, line_data2);
-                            mLineCharts.showLineChart(line3, line_data3);
-                            mLineCharts.showLineChart(line4, line_data4);
-                            mLineCharts.showLineChart(line5, line_data5);
+                            if(voltage_x_arr.length > 0){
+                                line_data1 = mLineCharts.getLineData(voltage_x_arr, voltage_y_arr);
+                                mLineCharts.showLineChart(line1, line_data1);
+                            }
+                            if(electric_current_x_arr.length > 0){
+                                line_data2 = mLineCharts.getLineData(electric_current_x_arr, electric_current_y_arr);
+                                mLineCharts.showLineChart(line2, line_data2);
+                            }
+                            if(power_factor_x_arr.length > 0){
+                                line_data3 = mLineCharts.getLineData(power_factor_x_arr, power_factor_y_arr);
+                                mLineCharts.showLineChart(line3, line_data3);
+                            }
+                            if(active_power_x_arr.length > 0){
+                                line_data4 = mLineCharts.getLineData(active_power_x_arr, active_power_y_arr);
+                                mLineCharts.showLineChart(line4, line_data4);
+                            }
+                            if(reactive_power_x_arr.length > 0 ){
+                                line_data5 = mLineCharts.getLineData(reactive_power_x_arr, reactive_power_y_arr);
+                                mLineCharts.showLineChart(line5, line_data5);
+                            }
                         }catch (Exception e){
                             Log.i("zhengsheng_error8", String.valueOf(e));
                         }
