@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.newly_dawn.app.zhengsheng.R;
 import com.newly_dawn.app.zhengsheng.tools.HttpRequest;
+import com.yalantis.phoenix.PullToRefreshView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +36,7 @@ public class Alarm extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        try{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -51,6 +53,9 @@ public class Alarm extends AppCompatActivity {
         initUI();
         loadData();
         loadEvent();
+        }catch (Exception e){
+            Log.i("zhengsheng_error111", String.valueOf(e));
+        }
     }
     public void initUI(){
 
@@ -66,28 +71,41 @@ public class Alarm extends AppCompatActivity {
         new GetAlertListAsync().execute(dataMp);
     }
     public void loadEvent(){
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeLayout);
-        swipeRefreshLayout.setColorSchemeResources(R.color.ocher);
-        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
-        swipeRefreshLayout.setProgressBackgroundColor(R.color.white);
-        swipeRefreshLayout.setProgressViewEndTarget(true, 200);
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        final PullToRefreshView mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
+        mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Thread(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        mHandler.sendEmptyMessage(1);
+                        mPullToRefreshView.setRefreshing(false);
+                        loadData();
                     }
-                }).start();
+                }, 500);
             }
         });
+//        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeLayout);
+//        swipeRefreshLayout.setColorSchemeResources(R.color.ocher);
+//        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
+//        swipeRefreshLayout.setProgressBackgroundColor(R.color.white);
+//        swipeRefreshLayout.setProgressViewEndTarget(true, 200);
+//
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        mHandler.sendEmptyMessage(1);
+//                    }
+//                }).start();
+//            }
+//        });
     }
     private Handler mHandler = new Handler(){
         @Override

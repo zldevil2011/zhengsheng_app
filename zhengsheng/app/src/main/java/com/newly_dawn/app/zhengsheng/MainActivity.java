@@ -255,8 +255,8 @@ public class MainActivity extends AppCompatActivity {
         dataDetailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent dataDetail_intent = new Intent(MainActivity.this, data_list.class);
-                startActivity(dataDetail_intent);
+                Intent datadetail_intent = new Intent(MainActivity.this, data_list.class);
+                startActivity(datadetail_intent);
             }
         });
     }
@@ -361,8 +361,6 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Intent contactUs_intent = new Intent(MainActivity.this, Contactus.class);
                     startActivity(contactUs_intent);
-
-
                 }catch (Exception e){
                     Log.i("zhengsheng_error5", String.valueOf(e));
                 }
