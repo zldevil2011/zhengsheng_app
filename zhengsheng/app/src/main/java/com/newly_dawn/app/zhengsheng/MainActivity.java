@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] news_title = new String[100];
     private String[] news_link = new String[100];
     private String[] news_image_link = new String[100];
+    private String[] news_time = new String[100];
     private ListView news_listview;
     public class getNewsSync extends AsyncTask<Map<String,String>, Void, Map<String, String>> {
         Map<String, String> result = new HashMap<>();
@@ -265,12 +266,13 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("zhengsheng_141x", String.valueOf(news_list));
                     int len = news_list.length();
                     Log.i("zhengsheng_141y", String.valueOf(len));
-                    news_total_num = 5;
+                    news_total_num = len;
                     for(int i = 0; i < len; ++i){
                         JSONObject tmp = news_list.getJSONObject(i);
                         news_title[i] = tmp.getString("name");
                         news_link[i] = tmp.getString("link").replace("\\/","/");
                         news_image_link[i] = tmp.getString("img").replace("\\/","/");
+                        news_time[i] = tmp.getString("time").replace("\\/","/");
                         Log.i("zhengsheng_141w", String.valueOf(news_image_link[i]));
                     }
                     Map<String, String> dataMp = new HashMap<>();
@@ -308,12 +310,16 @@ public class MainActivity extends AppCompatActivity {
             try{
                 Log.i("zhengsheng_URL", url);
                 myFileURL = new URL(url);
+                BitmapFactory.Options opt = new BitmapFactory.Options();
+                opt.inPreferredConfig = Bitmap.Config.RGB_565;
+                opt.inPurgeable = true;
+                opt.inInputShareable = true;
                 HttpURLConnection conn=(HttpURLConnection)myFileURL.openConnection();
                 conn.setConnectTimeout(6000);
                 conn.setDoInput(true);
                 conn.setUseCaches(true);
                 InputStream is = conn.getInputStream();
-                bitmap = BitmapFactory.decodeStream(is);
+                bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(is, null, opt), 100, 100, true);
                 is.close();
             }catch(Exception e){
                 e.printStackTrace();
@@ -347,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                         map.put("news_title", news_title[i]);
                         map.put("news_link", news_link[i]);
                         map.put("news_author", "中国电力新闻");
-                        map.put("news_time","2015-10-10 1" + String.valueOf(i) + ":00:00");
+                        map.put("news_time",news_time[i]);
                         listItems.add(map);
                     }
                     Log.i("zhengsheng_index_total", String.valueOf(listItems.size()));
@@ -393,7 +399,7 @@ public class MainActivity extends AppCompatActivity {
             map.put("news_title", news_title[i]);
             map.put("news_link", news_link[i]);
             map.put("news_author", "Author");
-            map.put("news_time","2015-10-10 12:00:00");
+            map.put("news_time",news_time[i]);
             listItems.add(map);
         }
         Log.i("zhengsheng_index", String.valueOf(listItems.size()));
