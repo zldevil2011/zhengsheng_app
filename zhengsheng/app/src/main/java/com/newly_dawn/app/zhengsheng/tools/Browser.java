@@ -42,6 +42,7 @@ public class Browser extends AppCompatActivity {
         father_webView.getSettings().setJavaScriptEnabled(true);
         father_webView.getSettings().setSupportZoom(true);
         father_webView.getSettings().setBuiltInZoomControls(true);
+        father_webView.setInitialScale(100);
         Log.i("AAAAA", "12345");
 //        WebView加载web资源
         try {
